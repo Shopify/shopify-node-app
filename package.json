@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "NODE_ENV=development node ./bin/www",
-    "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --profile --colors"
+    "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --profile --colors",
+    "clean": "rm -rf ./assets && mkdir ./assets"
   },
   "browsers": [
     "last 3 chrome versions",
