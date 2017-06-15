@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     main: [
       '@shopify/polaris/styles.css',
+      'webpack-hot-middleware/client',
       path.resolve(__dirname, 'client/index.js')
     ],
   },
@@ -20,6 +21,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
+    new webpack.HotModuleReplacementPlugin(),
   ],
   module: {
     loaders: [
