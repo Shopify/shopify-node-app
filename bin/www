@@ -3,7 +3,7 @@
 const chalk = require('chalk')
 const debug = require('debug')('shopify-node-app:server');
 const http = require('http');
-const app = require('../app');
+const app = require('../server');
 
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
