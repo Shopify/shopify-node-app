@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "webpack-dev-server --content-base app/ --hot --inline"
+    "dev": "NODE_ENV=development node ./bin/www",
+    "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --profile --colors"
   },
   "browsers": [
     "last 3 chrome versions",
@@ -26,7 +27,9 @@
     "express": "~4.15.2",
     "morgan": "~1.8.1",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "webpack-hot-middleware": "^2.18.0",
+    "webpack-middleware": "^1.5.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
