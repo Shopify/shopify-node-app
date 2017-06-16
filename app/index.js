@@ -6,36 +6,42 @@ import {
   ResourceList,
   TextField,
 } from '@shopify/polaris';
+import {EmbeddedApp, Bar} from '@shopify/polaris/embedded';
 import {connect} from 'react-redux';
 
 const App = ({query, filteredProducts, dispatch}) => {
-  return (
-    <Page
-      title="My application"
-      breadcrumbs={[
-        {content: 'Home', url: '/foo'},
-      ]}
-      primaryAction={{content: 'Add something'}}
-    >
-      <Layout sectioned>
-        <Layout.Section>
-          <TextField
-            label="Search products"
-            value={query}
-            onChange={(newQuery) => dispatch(searchAction(newQuery))}
-          />
-        </Layout.Section>
+  const apiKey = window.apiKey
+  const shopOrigin = window.shopOrigin
 
-        <Layout.Section>
-          <Card>
-            <ResourceList
-              items={filteredProducts}
-              renderItem={renderProduct}
+  return (
+    <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
+      <Page
+        title="My application"
+        breadcrumbs={[
+          {content: 'Home', url: '/foo'},
+        ]}
+        primaryAction={{content: 'Add something'}}
+      >
+        <Layout sectioned>
+          <Layout.Section>
+            <TextField
+              label="Search products"
+              value={query}
+              onChange={(newQuery) => dispatch(searchAction(newQuery))}
             />
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </Page>
+          </Layout.Section>
+
+          <Layout.Section>
+            <Card>
+              <ResourceList
+                items={filteredProducts}
+                renderItem={renderProduct}
+              />
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </Page>
+    </EmbeddedApp>
   );
 }
 
@@ -55,4 +61,3 @@ const mapStateToProps = ({query, filteredProducts}) => {
 }
 
 export default connect(mapStateToProps)(App);
-
