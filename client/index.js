@@ -1,10 +1,22 @@
 import * as React from 'react';
 import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import {createStore} from 'redux';
 import {AppContainer} from 'react-hot-loader';
+import exampleAppReducer from '../app/reducers';
+import App from '../app';
+
+const store = createStore(exampleAppReducer);
 
 function renderApp() {
-  const App = require('../app').default;
-  render(<AppContainer><App /></AppContainer>, document.getElementById('root'));
+  render(
+    <AppContainer>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </AppContainer>,
+    document.getElementById('root')
+  );
 }
 
 renderApp();

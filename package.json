@@ -31,6 +31,8 @@
     "react-dom": "^15.6.1",
     "webpack-hot-middleware": "^2.18.0",
     "webpack-middleware": "^1.5.1"
+    "react-redux": "^5.0.5",
+    "redux": "^3.6.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
