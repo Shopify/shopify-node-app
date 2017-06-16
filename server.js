@@ -12,6 +12,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const config = require('./webpack.config.js');
 const shopifyAuth = require('./routes/shopifyAuth');
+const shopifyApiProxy = require('./routes/shopifyApiProxy');
 
 const shopifyConfig = {
   host: process.env.SHOPIFY_APP_HOST,
@@ -39,6 +40,8 @@ app.get('/install',  function(req, res) {
 })
 
 app.use('/auth/shopify', shopifyAuth(shopifyConfig));
+
+app.use('/api', shopifyApiProxy);
 
 // Run webpack hot reloading in dev
 if (isDeveloping) {
@@ -68,7 +71,7 @@ app.get('/', function(req, res) {
   if (req.session.access_token) {
     res.render('app', { title: 'Shopify Node App', apiKey: shopifyConfig.apiKey, shop: req.session.shop });
   } else {
-    res.redirect('/install');
+    res.redirect(`/auth/shopify?shop=${req.query.shop}`);
   }
 });
 

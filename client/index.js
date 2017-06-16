@@ -5,6 +5,12 @@ import {AppContainer} from 'react-hot-loader';
 import store from '../app/store';
 import App from '../app';
 
+fetch('/api/products.json')
+  .then((response) => response.json())
+  .then((data) => {
+    console.log('👍', data)
+  })
+
 function renderApp() {
   render(
     <AppContainer>
