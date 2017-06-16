@@ -13,12 +13,10 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('./webpack.config.js');
 const shopifyAuth = require('./routes/shopifyAuth');
 
-console.log(process.env.SHOPIFY_APP_SECRET)
-
 const shopifyConfig = {
-  host: 'https://kevin-shopifyapps.fwd.wf',
-  apiKey: 'e83fbb0a19687cc6701eeb3ccdccb38c',
-  secret: '01a9b5f3e112808a868308c2bbf33dfe',
+  host: process.env.SHOPIFY_APP_HOST,
+  apiKey: process.env.SHOPIFY_APP_KEY,
+  secret: process.env.SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
   afterAuth: (req, res) => {
     // do stuff like register webhooks
