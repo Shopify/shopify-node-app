@@ -28,8 +28,8 @@
 
     <script type="text/javascript">
       ShopifyApp.init({
-        apiKey: "<%= ShopifyApp.configuration.api_key %>",
-        shopOrigin: "<%= "https://#{ @shop_session.url }" if @shop_session %>"
+        apiKey: "<%= apiKey %>",
+        shopOrigin: "https://<%= shop %>"
       });
     </script>
   </body>
