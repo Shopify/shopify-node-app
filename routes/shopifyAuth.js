@@ -1,5 +1,5 @@
 const express = require('express');
-const querystring= require('querystring');
+const querystring = require('querystring');
 const request = require('request');
 const crypto = require('crypto');
 
@@ -30,12 +30,12 @@ module.exports = function shopifyAuth({host, apiKey, secret, scope, afterAuth}) 
   // Shopify provides the app the is authorization_code, which is exchanged for an access token
   router.get('/callback', verifyRequest, function(req, res) {
     if (req.query.shop) {
-      var params = {
+      const params = {
         client_id: apiKey,
         client_secret: secret,
         code: req.query.code
       }
-      var req_body = querystring.stringify(params);
+      const req_body = querystring.stringify(params);
       request({
         url: `https://${req.query.shop}/admin/oauth/access_token`,
         method: 'POST',
@@ -45,7 +45,7 @@ module.exports = function shopifyAuth({host, apiKey, secret, scope, afterAuth}) 
         },
         body: req_body
       },
-      function(err,resp,body) {
+      function(err, resp, body) {
         body = JSON.parse(body);
         req.session.access_token = body.access_token;
         afterAuth(req, res)
@@ -54,12 +54,12 @@ module.exports = function shopifyAuth({host, apiKey, secret, scope, afterAuth}) 
   })
 
   function verifyRequest(req, res, next) {
-    var map = JSON.parse(JSON.stringify(req.query));
+    let map = JSON.parse(JSON.stringify(req.query));
     delete map['signature'];
     delete map['hmac'];
 
-    var message = querystring.stringify(map);
-    var generated_hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
+    const message = querystring.stringify(map);
+    const generated_hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
     if (generated_hash === req.query.hmac) {
       next();
     } else {

@@ -6,7 +6,7 @@ import {
   ResourceList,
   TextField,
 } from '@shopify/polaris';
-import {EmbeddedApp, Bar} from '@shopify/polaris/embedded';
+import {EmbeddedApp} from '@shopify/polaris/embedded';
 import {connect} from 'react-redux';
 
 const App = ({query, filteredProducts, dispatch}) => {
