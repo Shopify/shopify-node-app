@@ -11,5 +11,5 @@ This example app uses node, express, webpack, react, and Shopify/polaris
 
 ## Commands
 - `yarn run start` run the server
-- `yarn run dev` run it in dev mode ~with hotreloading~
+- `yarn run dev` run it in dev mode with hotreloading
 - `yarn run clean` clean the compiled assets directory
