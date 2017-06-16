@@ -20,7 +20,7 @@ const shopifyConfig = {
   scope: ['write_orders, write_products'],
   afterAuth: (req, res) => {
     // do stuff like register webhooks
-    return res.redirect('/app')
+    return res.redirect('/')
   }
 }
 
@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({ secret: 'keyboard cat', resave: true, saveUninitialized: false }));
 
-app.get('/',  function(req, res) {
+app.get('/install',  function(req, res) {
   res.render('install')
 })
 
@@ -64,11 +64,11 @@ if (isDeveloping) {
   app.use(express.static(__dirname + '/assets'))
 }
 
-app.get('/app', function(req, res) {
+app.get('/', function(req, res) {
   if (req.session.access_token) {
     res.render('app', { title: 'Shopify Node App', apiKey: shopifyConfig.apiKey, shop: req.session.shop });
   } else {
-    res.redirect('/');
+    res.redirect('/install');
   }
 });
 
