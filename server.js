@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const express = require('express');
 const session = require('express-session');
@@ -11,6 +12,8 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const config = require('./webpack.config.js');
 const shopifyAuth = require('./routes/shopifyAuth');
+
+console.log(process.env.SHOPIFY_APP_SECRET)
 
 const shopifyConfig = {
   host: 'https://kevin-shopifyapps.fwd.wf',
