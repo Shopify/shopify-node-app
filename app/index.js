@@ -8,7 +8,7 @@ import {
 } from '@shopify/polaris';
 import {connect} from 'react-redux';
 
-const App = ({query, products, onSearchChange}) => {
+const App = ({query, filteredProducts, dispatch}) => {
   return (
     <Page
       title="My application"
@@ -22,14 +22,14 @@ const App = ({query, products, onSearchChange}) => {
           <TextField
             label="Search products"
             value={query}
-            onChange={(query) => onSearchChange(query)}
+            onChange={(newQuery) => dispatch(searchAction(newQuery))}
           />
         </Layout.Section>
 
         <Layout.Section>
           <Card>
             <ResourceList
-              items={products}
+              items={filteredProducts}
               renderItem={renderProduct}
             />
           </Card>
@@ -45,25 +45,14 @@ function renderProduct({title}) {
 
 function searchAction(query) {
   return {
-    type: 'QUERY',
+    type: 'SEARCH',
     query
   };
 }
 
-const mapStateToProps = (state) => {
-  return {
-    query: state.query,
-    products: state.products.filter((product) => (product.title.indexOf(state.query) !== -1))
-  };
+const mapStateToProps = ({query, filteredProducts}) => {
+  return {query, filteredProducts};
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onSearchChange: (query) => {
-      dispatch(searchAction(query))
-    }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);
 
