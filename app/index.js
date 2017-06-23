@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   Page,
+  Button,
   Layout,
   Card,
   ResourceList,
@@ -9,40 +10,64 @@ import {
 import {EmbeddedApp} from '@shopify/polaris/embedded';
 import {connect} from 'react-redux';
 
-const App = ({query, filteredProducts, dispatch}) => {
-  const apiKey = window.apiKey
-  const shopOrigin = window.shopOrigin
+const userId = window.userId;
 
-  return (
-    <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
-      <Page
-        title="My application"
-        breadcrumbs={[
-          {content: 'Home', url: '/foo'},
-        ]}
-        primaryAction={{content: 'Add something'}}
-      >
-        <Layout sectioned>
-          <Layout.Section>
-            <TextField
-              label="Search products"
-              value={query}
-              onChange={(newQuery) => dispatch(searchAction(newQuery))}
-            />
-          </Layout.Section>
+class App extends React.Component {
+  componentDidMount() {
+    const {dispatch} = this.props;
 
-          <Layout.Section>
-            <Card>
-              <ResourceList
-                items={filteredProducts}
-                renderItem={renderProduct}
+    fetch(`/api/products.json?userId=${userId}`)
+      .then((response) => response.json())
+      .then(({products}) => {
+        dispatch(setAction(products));
+      });
+  }
+
+  doIllegalThing() {
+    fetch(`/api/customers.json?userId=${userId}`)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+      });
+  }
+
+  render() {
+    const {query, filteredProducts, dispatch} = this.props;
+    const apiKey = window.apiKey
+    const shopOrigin = window.shopOrigin
+
+    return (
+      <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
+        <Page
+          title="My application"
+          breadcrumbs={[
+            {content: 'Home', url: '/foo'},
+          ]}
+          primaryAction={{content: 'Add something'}}
+        >
+          <Layout sectioned>
+            <Button onClick={this.doIllegalThing}>👹</Button>
+            <Layout.Section>
+              <TextField
+                label="Search products"
+                value={query}
+                onChange={(newQuery) => dispatch(searchAction(newQuery))}
               />
-            </Card>
-          </Layout.Section>
-        </Layout>
-      </Page>
-    </EmbeddedApp>
-  );
+            </Layout.Section>
+
+            <Layout.Section>
+              <Card>
+                <ResourceList
+                  items={filteredProducts}
+                  renderItem={renderProduct}
+                />
+              </Card>
+            </Layout.Section>
+          </Layout>
+        </Page>
+      </EmbeddedApp>
+    );
+  }
 }
 
 function renderProduct({title}) {
@@ -52,7 +77,14 @@ function renderProduct({title}) {
 function searchAction(query) {
   return {
     type: 'SEARCH',
-    query
+    payload: {query},
+  };
+}
+
+function setAction(products) {
+  return {
+    type: 'SET',
+    payload: {products},
   };
 }
 

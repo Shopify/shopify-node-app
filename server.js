@@ -9,19 +9,20 @@ const bodyParser = require('body-parser');
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-
 const config = require('./webpack.config.js');
+
 const shopifyAuth = require('./routes/shopifyAuth');
 const shopifyApiProxy = require('./routes/shopifyApiProxy');
+const persistentStore = require('./persistentStore');
 
 const shopifyConfig = {
   host: process.env.SHOPIFY_APP_HOST,
   apiKey: process.env.SHOPIFY_APP_KEY,
   secret: process.env.SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
-  afterAuth: (req, res) => {
-    // do stuff like register webhooks
-    return res.redirect('/')
+  afterAuth(request, response) {
+    // do stuff like register webhooks here //
+    return response.redirect('/');
   }
 }
 
@@ -67,12 +68,24 @@ if (isDeveloping) {
   app.use(express.static(__dirname + '/assets'))
 }
 
-app.get('/', function(req, res) {
-  if (req.session.access_token) {
-    res.render('app', { title: 'Shopify Node App', apiKey: shopifyConfig.apiKey, shop: req.session.shop });
-  } else {
-    res.redirect(`/auth/shopify?shop=${req.query.shop}`);
-  }
+app.get('/', function(request, response) {
+    const {session: {shop, access_token: apiToken}} = request;
+    if (!apiToken) {
+      response.redirect(`/auth/shopify?shop=${request.query.shop}`);
+    }
+
+    persistentStore.storeUser({apiToken, shop}, (err, userId) => {
+      if (err) {
+        return console.error('🔴 Error creating local token', err);
+      }
+
+      return response.render('app', {
+        title: 'Shopify Node App',
+        apiKey: shopifyConfig.apiKey,
+        shop: request.session.shop,
+        userId: userId,
+      });
+    });
 });
 
 app.use(function(req, res, next) {
