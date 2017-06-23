@@ -1,25 +1,58 @@
-const httpProxy = require('http-proxy');
-const url = require('url');
 const express = require('express');
+const request = require('request');
 
-const proxy = new httpProxy.createProxyServer();
+const store = require('../persistentStore');
 const router = express.Router();
 
-router.all('/:endpoint', function(req, res, next) {
-  // we don't get the token here because we're dumb
-      // ie. this isn't the client as got the token because of xhrs
-  //solutions:
-    // you can store sessions somehow persistently and then give users access tokens...
-    // its gonna be gross! :)
+const ALLOWED_LIST = [
+  'products',
+  'orders',
+]
 
-  const shop = req.session.shop;
-  const endpoint = req.params.endpoint;
-  proxy.proxyRequest(req, res, {
-    target: `https://${shop}/admin/${endpoint}`,
-    ignorePath: true,
-    headers: {
-      'X-Shopify-Access-Token': req.session.access_token,
-    },
+function legalPath(path) {
+  const strippedPath = path
+    .split('?')[0]
+    .split('.json')[0];
+
+  return ALLOWED_LIST.some((resource) => {
+    return strippedPath === resource;
+  })
+}
+
+router.all('/:endpoint', (req, res, next) => {
+  const {
+    method,
+    body,
+    params: {endpoint},
+    query: {userId},
+  } = req;
+
+  if (!legalPath(endpoint)) {
+    return res.status(403).send({error: `${endpoint} is forbidden by shopifyApiProxy`});
+  }
+
+  store.getToken(userId, (err, userData) => {
+    if (err || !userData) {
+      return res.status(401).send(err);
+    }
+
+    const {shop, apiToken} = userData;
+    const uri = `https://${shop}/admin/${endpoint}`;
+
+    request({
+        method,
+        uri,
+        headers: {
+          'X-Shopify-Access-Token': apiToken,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    }, (remoteError, remoteResponse, body) => {
+      if (remoteError) {
+        return res.status(500).send(remoteError);
+      }
+      res.status(remoteResponse.statusCode).send(body);
+    });
   });
 });
 
