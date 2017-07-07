@@ -57,13 +57,12 @@ function fetchWithParams(url, fetchOpts, query) {
   const parsedUrl = new URL(url)
 
   parsedUrl.searchParams.delete('userId');
-  console.log(query);
+
   Object
     .entries(query)
     .forEach(([key, value]) => {
       parsedUrl.searchParams.append(key, value)
     });
 
-  console.log('parsedUrl.href', parsedUrl.href)
   return fetch(parsedUrl.href, fetchOpts);
 };
