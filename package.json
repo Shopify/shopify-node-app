@@ -7,11 +7,12 @@
     "dev": "NODE_ENV=development node ./bin/www",
     "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --profile --colors",
     "clean": "rm -rf ./assets && mkdir ./assets",
+    "pretty": "prettier --single-quote --trailing-comma es5 --write {app,bin,persistentStore,routes,views}/*.js",
     "precommit": "lint-staged"
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write",
+      "prettier --single-quote --trailing-comma es5 --write",
       "git add"
     ]
   },

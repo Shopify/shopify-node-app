@@ -1,7 +1,7 @@
-const proxy = require("express-http-proxy");
-const store = require("../persistentStore");
+const proxy = require('express-http-proxy');
+const store = require('../persistentStore');
 
-const ALLOWED_LIST = ["/products", "/orders"];
+const ALLOWED_LIST = ['/products', '/orders'];
 
 module.exports = function shopifyApiProxy(request, response, next) {
   const { query: { userId } } = request;
@@ -15,7 +15,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
     return proxy(`https://${shop}`, {
       https: true,
       filter: function({ path }, res) {
-        const strippedPath = path.split("?")[0].split(".json")[0];
+        const strippedPath = path.split('?')[0].split('.json')[0];
 
         return ALLOWED_LIST.some(resource => {
           return strippedPath === resource;
@@ -25,10 +25,10 @@ module.exports = function shopifyApiProxy(request, response, next) {
         return `/admin${url}`;
       },
       proxyReqOptDecorator(proxyRequestOptions, sourceRequest) {
-        proxyRequestOptions.headers["X-Shopify-Access-Token"] = accessToken;
-        proxyRequestOptions.headers["content-type"] = "application/json";
+        proxyRequestOptions.headers['X-Shopify-Access-Token'] = accessToken;
+        proxyRequestOptions.headers['content-type'] = 'application/json';
         return proxyRequestOptions;
-      }
+      },
     })(request, response, next);
   });
 };

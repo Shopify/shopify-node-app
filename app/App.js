@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Page, Layout, Card, ResourceList, TextField } from "@shopify/polaris";
-import { EmbeddedApp } from "@shopify/polaris/embedded";
-import { connect } from "react-redux";
+import * as React from 'react';
+import { Page, Layout, Card, ResourceList, TextField } from '@shopify/polaris';
+import { EmbeddedApp } from '@shopify/polaris/embedded';
+import { connect } from 'react-redux';
 
 const userId = window.userId;
 
@@ -25,8 +25,8 @@ class App extends React.Component {
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
         <Page
           title="My application"
-          breadcrumbs={[{ content: "Home", url: "/foo" }]}
-          primaryAction={{ content: "Add something" }}
+          breadcrumbs={[{ content: 'Home', url: '/foo' }]}
+          primaryAction={{ content: 'Add something' }}
         >
           <Layout sectioned>
             <Layout.Section>
@@ -58,15 +58,15 @@ function renderProduct({ title }) {
 
 function searchAction(query) {
   return {
-    type: "SEARCH",
-    payload: { query }
+    type: 'SEARCH',
+    payload: { query },
   };
 }
 
 function setAction(products) {
   return {
-    type: "SET",
-    payload: { products }
+    type: 'SET',
+    payload: { products },
   };
 }
 

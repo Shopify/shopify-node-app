@@ -1,5 +1,5 @@
-const Redis = require("redis");
-const uuid = require("uuid/v1");
+const Redis = require('redis');
+const uuid = require('uuid/v1');
 
 const redis = Redis.createClient();
 
