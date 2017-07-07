@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const webpack = require("webpack");
 const webpackMiddleware = require("webpack-dev-middleware");
 const webpackHotMiddleware = require("webpack-hot-middleware");
-const config = require("./webpack.config.js");
+const config = require("../config/webpack.config.js");
 
 const shopifyAuth = require("./routes/shopifyAuth");
 const shopifyApiProxy = require("./routes/shopifyApiProxy");

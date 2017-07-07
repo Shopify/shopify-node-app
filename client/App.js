@@ -8,12 +8,13 @@ const userId = window.userId;
 class App extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
-
-    fetch(`/api/products.json?userId=${userId}`)
+    console.log('test');
+    fetch(`/api/products.json?userId=${userId}&limit=1`)
       .then(response => response.json())
       .then(({ products }) => {
         return dispatch(setAction(products));
-      });
+      })
+      .catch((error) => console.error(error));
   }
 
   render() {

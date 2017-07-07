@@ -14,6 +14,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
 
     return proxy(`https://${shop}`, {
       https: true,
+      limit: '5mb',
       filter: function({ path }, res) {
         const strippedPath = path.split('?')[0].split('.json')[0];
 

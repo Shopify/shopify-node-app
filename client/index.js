@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { AppContainer } from 'react-hot-loader';
-import store from '../app/store';
+import store from '../client/store';
 import App from './App';
 
 function renderApp() {
@@ -20,5 +20,5 @@ renderApp();
 
 if (module.hot) {
   module.hot.accept('./index.js');
-  module.hot.accept('../app', renderApp);
+  module.hot.accept('./', renderApp);
 }

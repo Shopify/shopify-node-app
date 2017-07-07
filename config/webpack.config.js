@@ -7,9 +7,10 @@ module.exports = {
   devtool: "eval",
   entry: {
     main: [
+      "react-hot-loader/patch",
       "@shopify/polaris/styles.css",
       "webpack-hot-middleware/client",
-      path.resolve(__dirname, "app/index.js")
+      path.resolve(__dirname, "../client/index.js")
     ]
   },
   output: {
