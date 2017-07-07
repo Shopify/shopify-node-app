@@ -9,7 +9,7 @@ class App extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
     console.log('test');
-    fetch(`/api/products.json?userId=${userId}&limit=1`)
+    fetch(`/api/products.json?limit=10&userId=${userId}`)
       .then(response => response.json())
       .then(({ products }) => {
         return dispatch(setAction(products));

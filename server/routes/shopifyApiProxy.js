@@ -1,5 +1,4 @@
 const {URL} = require('url');
-const proxy = require('express-http-proxy');
 const store = require('../persistentStore');
 const fetch = require('node-fetch');
 
@@ -32,37 +31,39 @@ module.exports = function shopifyApiProxy(request, response, next) {
       return response.status(403);
     }
 
-    fetchWithParams(`https://${shop}/admin/${path}`, {
-        method,
-        body,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': accessToken,
-        },
-    })
-    .then(remoteResponse => {
-      remoteResponse
-        .json()
-        .then(responseBody => {
-          response
-            .status(remoteResponse.status)
-            .send(responseBody);
-        })
-    })
-
+    const fetchOptions = {
+      method,
+      body,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': accessToken,
+      },
+    };
+    fetchWithParams(`https://${shop}/admin${path}`, fetchOptions, query)
+      .then(remoteResponse => {
+        remoteResponse
+          .json()
+          .then(responseBody => {
+            response
+              .status(remoteResponse.status)
+              .send(responseBody);
+          })
+          .catch(err => response.err(err));
+      });
   });
 };
 
-function fetchWithParams(url, fetchOpts, params = {}) {
+function fetchWithParams(url, fetchOpts, query) {
   const parsedUrl = new URL(url)
 
   parsedUrl.searchParams.delete('userId');
-
+  console.log(query);
   Object
-    .keys(params)
-    .forEach(key => {
-      parsedUrl.searchParams.append(key, params[key])
+    .entries(query)
+    .forEach(([key, value]) => {
+      parsedUrl.searchParams.append(key, value)
     });
 
+  console.log('parsedUrl.href', parsedUrl.href)
   return fetch(parsedUrl.href, fetchOpts);
 };
