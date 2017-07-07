@@ -28,7 +28,6 @@
     "dotenv": "^4.0.0",
     "ejs": "~2.5.6",
     "express": "~4.15.2",
-    "express-http-proxy": "^1.0.4",
     "express-session": "^1.15.3",
     "morgan": "~1.8.1",
     "node-fetch": "^1.7.1",
