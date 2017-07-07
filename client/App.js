@@ -14,7 +14,7 @@ class App extends React.Component {
       .then(({ products }) => {
         return dispatch(setAction(products));
       })
-      .catch((error) => console.error(error));
+      .catch(error => console.error(error));
   }
 
   render() {
