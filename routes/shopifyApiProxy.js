@@ -1,59 +1,34 @@
-const express = require('express');
-const request = require('request');
+const proxy = require("express-http-proxy");
+const store = require("../persistentStore");
 
-const store = require('../persistentStore');
-const router = express.Router();
+const ALLOWED_LIST = ["/products", "/orders"];
 
-const ALLOWED_LIST = [
-  'products',
-  'orders',
-]
+module.exports = function shopifyApiProxy(request, response, next) {
+  const { query: { userId } } = request;
 
-function legalPath(path) {
-  const strippedPath = path
-    .split('?')[0]
-    .split('.json')[0];
-
-  return ALLOWED_LIST.some((resource) => {
-    return strippedPath === resource;
-  })
-}
-
-router.all('/:endpoint', (req, res, next) => {
-  const {
-    method,
-    body,
-    params: {endpoint},
-    query: {userId},
-  } = req;
-
-  if (!legalPath(endpoint)) {
-    return res.status(403).send({error: `${endpoint} is forbidden by shopifyApiProxy`});
-  }
-
-  store.getToken(userId, (err, userData) => {
+  return store.getToken(userId, (err, userData) => {
     if (err || !userData) {
-      return res.status(401).send(err);
+      return response.status(401);
     }
+    const { shop, accessToken } = userData;
 
-    const {shop, apiToken} = userData;
-    const uri = `https://${shop}/admin/${endpoint}`;
+    return proxy(`https://${shop}`, {
+      https: true,
+      filter: function({ path }, res) {
+        const strippedPath = path.split("?")[0].split(".json")[0];
 
-    request({
-        method,
-        uri,
-        headers: {
-          'X-Shopify-Access-Token': apiToken,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(body),
-    }, (remoteError, remoteResponse, body) => {
-      if (remoteError) {
-        return res.status(500).send(remoteError);
+        return ALLOWED_LIST.some(resource => {
+          return strippedPath === resource;
+        });
+      },
+      proxyReqPathResolver({ url }) {
+        return `/admin${url}`;
+      },
+      proxyReqOptDecorator(proxyRequestOptions, sourceRequest) {
+        proxyRequestOptions.headers["X-Shopify-Access-Token"] = accessToken;
+        proxyRequestOptions.headers["content-type"] = "application/json";
+        return proxyRequestOptions;
       }
-      res.status(remoteResponse.statusCode).send(body);
-    });
+    })(request, response, next);
   });
-});
-
-module.exports = router;
+};

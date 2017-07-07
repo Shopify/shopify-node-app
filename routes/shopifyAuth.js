@@ -1,69 +1,78 @@
-const express = require('express');
-const querystring = require('querystring');
-const request = require('request');
-const crypto = require('crypto');
+const express = require("express");
+const querystring = require("querystring");
+const fetch = require("node-fetch");
+const crypto = require("crypto");
 
-module.exports = function shopifyAuth({host, apiKey, secret, scope, afterAuth}) {
+module.exports = function shopifyAuth({
+  host,
+  apiKey,
+  secret,
+  scope,
+  afterAuth
+}) {
   const router = express.Router();
 
   // This function initializes the Shopify OAuth Process
   // The template in views/embedded_app_redirect.ejs is rendered
-  router.get('/', function(req, res) {
-    if (req.query.shop) {
-      req.session.shop = req.query.shop;
-      const redirect_to = `https://${req.query.shop}/admin/oauth/authorize`
-      const redirect_params = `?client_id=${apiKey}&scope=${scope}&redirect_uri=${host}/auth/shopify/callback`
-      res.send(
+  router.get("/", function(request, response) {
+    if (request.query.shop) {
+      request.session.shop = request.query.shop;
+      const redirectTo = `https://${request.query.shop}/admin/oauth/authorize`;
+      const redirectParams = `?client_id=${apiKey}&scope=${scope}&redirect_uri=${host}/auth/shopify/callback`;
+      response.send(
         `<!DOCTYPE html>
         <html>
           <head>
             <script type="text/javascript">
-              window.top.location.href = "${redirect_to}${redirect_params}"
+              window.top.location.href = "${redirectTo}${redirectParams}"
             </script>
           </head>
         </html>`
       );
     }
-  })
+  });
 
   // After the users clicks 'Install' on the Shopify website, they are redirected here
   // Shopify provides the app the is authorization_code, which is exchanged for an access token
-  router.get('/callback', verifyRequest, function(req, res) {
-    if (req.query.shop) {
+  router.get("/callback", verifyRequest, (request, response) => {
+    if (request.query.shop) {
       const params = {
         client_id: apiKey,
         client_secret: secret,
-        code: req.query.code
-      }
-      const req_body = querystring.stringify(params);
-      request({
-        url: `https://${req.query.shop}/admin/oauth/access_token`,
-        method: 'POST',
+        code: request.query.code
+      };
+      const requestBody = querystring.stringify(params);
+      fetch(`https://${request.query.shop}/admin/oauth/access_token`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(req_body)
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Length": Buffer.byteLength(requestBody)
         },
-        body: req_body
-      },
-      function(err, resp, body) {
-        body = JSON.parse(body);
-        req.session.access_token = body.access_token;
-        afterAuth(req, res)
+        body: requestBody
       })
+        .then(remoteResponse => remoteResponse.json())
+        .then(responseBody => {
+          request.session.accessToken = responseBody.access_token;
+          afterAuth(request, response);
+        });
     }
-  })
+  });
 
-  function verifyRequest(req, res, next) {
-    let map = JSON.parse(JSON.stringify(req.query));
-    delete map['signature'];
-    delete map['hmac'];
+  function verifyRequest(request, response, next) {
+    const map = JSON.parse(JSON.stringify(request.query));
+    delete map["signature"];
+    delete map["hmac"];
 
     const message = querystring.stringify(map);
-    const generated_hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
-    if (generated_hash === req.query.hmac) {
+    const generated_hash = crypto
+      .createHmac("sha256", secret)
+      .update(message)
+      .digest("hex");
+
+    if (generated_hash === request.query.hmac) {
       next();
     } else {
-      return res.json(400);
+      return response.json(400);
     }
   }
 
