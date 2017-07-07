@@ -8,13 +8,7 @@
     "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --profile --colors",
     "clean": "rm -rf ./assets && mkdir ./assets",
     "pretty": "prettier --single-quote --trailing-comma es5 --write {app,bin,persistentStore,routes,views}/*.js",
-    "precommit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --single-quote --trailing-comma es5 --write",
-      "git add"
-    ]
+    "precommit": "yarn run pretty"
   },
   "browsers": [
     "last 3 chrome versions",
@@ -60,8 +54,6 @@
     "eslint": "3.19.0",
     "eslint-plugin-prettier": "^2.1.2",
     "global": "^4.3.2",
-    "husky": "^0.14.3",
-    "lint-staged": "^4.0.1",
     "node-inspector": "^1.1.1",
     "postcss-loader": "^2.0.6",
     "prettier": "^1.5.2",
