@@ -6,7 +6,9 @@
     "start": "node ./bin/www",
     "dev": "NODE_ENV=development node ./bin/www",
     "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --profile --colors",
-    "clean": "rm -rf ./assets && mkdir ./assets"
+    "clean": "rm -rf ./assets && mkdir ./assets",
+    "pretty": "prettier --single-quote --trailing-comma es5 --write {client,bin,config,server}/**/*.js",
+    "precommit": "yarn run pretty"
   },
   "browsers": [
     "last 3 chrome versions",
@@ -28,6 +30,7 @@
     "express": "~4.15.2",
     "express-session": "^1.15.3",
     "morgan": "~1.8.1",
+    "node-fetch": "^1.7.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",
@@ -47,9 +50,12 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.4",
+    "eslint": "3.19.0",
+    "eslint-plugin-prettier": "^2.1.2",
     "global": "^4.3.2",
     "node-inspector": "^1.1.1",
     "postcss-loader": "^2.0.6",
+    "prettier": "^1.5.2",
     "react-hot-loader": "3",
     "style-loader": "^0.18.2",
     "webpack": "^2.6.1",

@@ -1,17 +1,17 @@
-import {createStore} from 'redux';
+import { createStore } from 'redux';
 
 const products = [
-  {title: 'Awesome concrete box'},
-  {title: 'Hard rubber boots'},
-]
+  { title: 'Awesome concrete box' },
+  { title: 'Hard rubber boots' },
+];
 
 const initState = {
   query: '',
-  products: products,
-  filteredProducts: products
-}
+  filteredProducts: products,
+  products,
+};
 
-const exampleAppReducer = (state = initState, action) => {
+function exampleAppReducer(state = initState, action) {
   switch (action.type) {
     case 'SET':
       return {
@@ -23,7 +23,7 @@ const exampleAppReducer = (state = initState, action) => {
       return Object.assign({}, state, {
         query: action.payload.query,
         products: state.products,
-        filteredProducts: state.products.filter((product) => {
+        filteredProducts: state.products.filter(product => {
           return product.title.indexOf(action.payload.query) !== -1;
         }),
       });
