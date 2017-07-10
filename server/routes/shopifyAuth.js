@@ -13,7 +13,6 @@ module.exports = function shopifyAuth({
   const router = express.Router();
 
   // This function initializes the Shopify OAuth Process
-  // The template in views/embedded_app_redirect.ejs is rendered
   router.get('/', function(request, response) {
     if (request.query.shop) {
       request.session.shop = request.query.shop;
@@ -32,8 +31,9 @@ module.exports = function shopifyAuth({
     }
   });
 
-  // After the users clicks 'Install' on the Shopify website, they are redirected here
-  // Shopify provides the app the is authorization_code, which is exchanged for an access token
+  // Users are redirected here after clicking `Install`.
+  // The redirect from Shopify contains the authorization_code query parameter,
+  // which the app exchanges for an access token
   router.get('/callback', verifyRequest, (request, response) => {
     if (request.query.shop) {
       const params = {

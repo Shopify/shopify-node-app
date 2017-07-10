@@ -2,7 +2,7 @@ const { URL } = require('url');
 const store = require('../persistentStore');
 const fetch = require('node-fetch');
 
-const ALLOWED_LIST = ['/products', '/orders'];
+const ALLOWED_URLS = ['/products', '/orders'];
 
 module.exports = function shopifyApiProxy(request, response, next) {
   const { query, method, path, body } = request;
@@ -10,7 +10,11 @@ module.exports = function shopifyApiProxy(request, response, next) {
   const { userId } = query;
 
   return store.getToken(userId, (err, userData) => {
-    if (err || !userData) {
+    if (err) {
+      return response.status(500);
+    }
+
+    if (userData == null) {
       return response.status(401);
     }
 
@@ -18,7 +22,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
 
     const strippedPath = path.split('?')[0].split('.json')[0];
 
-    const inAllowed = ALLOWED_LIST.some(resource => {
+    const inAllowed = ALLOWED_URLS.some(resource => {
       return strippedPath === resource;
     });
 
@@ -34,6 +38,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
         'X-Shopify-Access-Token': accessToken,
       },
     };
+
     fetchWithParams(
       `https://${shop}/admin${path}`,
       fetchOptions,
