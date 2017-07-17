@@ -16,19 +16,29 @@ This example app uses node, express, webpack, react, redux, and Shopify/polaris
 - `yarn run clean` clean the compiled assets directory
 
 ## Getting this to work locally
-- clone :)
-- Create a forward or ngrok tunnel pointing at your localhost:3000
-  - Note the tunnel url (we'll refer to it as HOST)
-- Create an empty `.env` file
-- Create a new app on partners dashboard
+
+### Install external dependencies
+- Install and run [Redis](https://redis.io/topics/quickstart)
+  - Using homebrew: `brew install redis && brew services start redis`
+
+### Allow your app to talk to Shopify
+- Create a tunnel to localhost:3000 using [forward](https://forwardhq.com/) or [ngrok](https://ngrok.com/)
+  - Note the tunnel url (we’ll refer to it as HOST)
+
+### Register your app
+- Sign into [partners dashboard](https://www.shopify.ca/partners)
+- Create a new app
 - Set the app url to `HOST/`
 - Set the whitelisted URL to `HOST/auth/shopify/callback`
-- Go to extensions and enable embedded app
-- In your `env` file
+- Go to extensions tab and enable “Embed in Shopify admin”
+
+### Configure and add to a store
+- Clone: `git clone git@github.com:Shopify/shopify-node-app.git`
+- Rename `.env.example` to `.env` and
+  - Set Add HOST from your tunnel service as `SHOPIFY_APP_HOST`
   - Add the api key from partners dash as `SHOPIFY_APP_KEY`
   - Add the api secret from partners dash as `SHOPIFY_APP_SECRET`
-  - Add the hostname from your tunnel service as `SHOPIFY_APP_HOST`
-- run `yarn run install && yarn run start`
-- open a browser to your `HOST/install`
-- click the install button
+- Run `yarn install && yarn run start`
+- Open a browser to `HOST/install`
+- Enter your store’s domain and hit install
 - 🚀 🎉
