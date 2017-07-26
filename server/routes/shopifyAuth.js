@@ -1,6 +1,5 @@
 const express = require('express');
 const querystring = require('querystring');
-const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 module.exports = function shopifyAuth({

@@ -1,6 +1,5 @@
 const { URL } = require('url');
 const store = require('../persistentStore');
-const fetch = require('node-fetch');
 
 const ALLOWED_URLS = ['/products', '/orders'];
 
