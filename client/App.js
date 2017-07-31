@@ -18,7 +18,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { query, filteredProducts, dispatch, productLimit } = this.props;
+    const { filterQuery, filteredProducts, dispatch, productLimit } = this.props;
     const apiKey = window.apiKey;
     const shopOrigin = window.shopOrigin;
 
@@ -34,14 +34,19 @@ class App extends React.Component {
               <FormLayout>
                 <FormLayout.Group>
                   <TextField
-                    label="Search products"
-                    value={query}
-                    onChange={newQuery => dispatch(searchAction(newQuery))}
+                    label="Search product title"
+                    value={filterQuery}
+                    onChange={newQuery => dispatch(filterAction(newQuery))}
                   />
                   <Select
                     label="Search limit"
                     options={['10', '20', '50']}
                     value={productLimit}
+                  />
+                  <TextField
+                    label="Filter by product title"
+                    value={filterQuery}
+                    onChange={newQuery => dispatch(filterAction(newQuery))}
                   />
                 </FormLayout.Group>
               </FormLayout>
@@ -66,10 +71,10 @@ function renderProduct({ title }) {
   return <ResourceList.Item attributeOne={title} />;
 }
 
-function searchAction(query) {
+function filterAction(filterQuery) {
   return {
-    type: 'SEARCH',
-    payload: { query },
+    type: 'FILTER',
+    payload: { filterQuery },
   };
 }
 
@@ -80,8 +85,8 @@ function setAction(products) {
   };
 }
 
-function mapStateToProps({ query, filteredProducts }) {
-  return { query, filteredProducts };
+function mapStateToProps({ filterQuery, filteredProducts }) {
+  return { filterQuery, filteredProducts };
 }
 
 export default connect(mapStateToProps)(App);

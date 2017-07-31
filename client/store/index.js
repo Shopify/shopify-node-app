@@ -6,7 +6,7 @@ const products = [
 ];
 
 const initState = {
-  query: '',
+  filterQuery: '',
   filteredProducts: products,
   products,
 };
@@ -15,16 +15,16 @@ function exampleAppReducer(state = initState, action) {
   switch (action.type) {
     case 'SET':
       return {
-        query: '',
+        filterQuery: '',
         products: action.payload.products,
         filteredProducts: action.payload.products,
       };
-    case 'SEARCH':
+    case 'FILTER':
       return Object.assign({}, state, {
-        query: action.payload.query,
+        filterQuery: action.payload.filterQuery,
         products: state.products,
         filteredProducts: state.products.filter(product => {
-          return product.title.indexOf(action.payload.query) !== -1;
+          return product.title.indexOf(action.payload.filterQuery) !== -1;
         }),
       });
     default:
