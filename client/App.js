@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Page, Layout, Card, ResourceList, TextField } from '@shopify/polaris';
+import { Page, Layout, Card, ResourceList, TextField, Select, FormLayout } from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
 import { connect } from 'react-redux';
 
@@ -7,9 +7,9 @@ const userId = window.userId;
 
 class App extends React.Component {
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, productLimit } = this.props;
 
-    fetch(`/api/products.json?limit=10&userId=${userId}`)
+    fetch(`/api/products.json?limit=${productLimit}&userId=${userId}`)
       .then(response => response.json())
       .then(({ products }) => {
         return dispatch(setAction(products));
@@ -18,7 +18,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { query, filteredProducts, dispatch } = this.props;
+    const { query, filteredProducts, dispatch, productLimit } = this.props;
     const apiKey = window.apiKey;
     const shopOrigin = window.shopOrigin;
 
@@ -31,11 +31,20 @@ class App extends React.Component {
         >
           <Layout sectioned>
             <Layout.Section>
-              <TextField
-                label="Search products"
-                value={query}
-                onChange={newQuery => dispatch(searchAction(newQuery))}
-              />
+              <FormLayout>
+                <FormLayout.Group>
+                  <TextField
+                    label="Search products"
+                    value={query}
+                    onChange={newQuery => dispatch(searchAction(newQuery))}
+                  />
+                  <Select
+                    label="Search limit"
+                    options={['10', '20', '50']}
+                    value={productLimit}
+                  />
+                </FormLayout.Group>
+              </FormLayout>
             </Layout.Section>
 
             <Layout.Section>
