@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Page, Layout, Card, ResourceList, TextField, Select, FormLayout } from '@shopify/polaris';
+import {
+  Page,
+  Layout,
+  Card,
+  ResourceList,
+  TextField,
+  Select,
+  FormLayout,
+} from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
 import { connect } from 'react-redux';
 
@@ -7,20 +15,33 @@ const userId = window.userId;
 
 class App extends React.Component {
   componentDidMount() {
-    const { dispatch, productLimit } = this.props;
+    const {
+      dispatch,
+      searchFields
+    } = this.props;
 
-    fetch(`/api/products.json?limit=${productLimit}&userId=${userId}`)
-      .then(response => response.json())
-      .then(({ products }) => {
-        return dispatch(setAction(products));
-      })
-      .catch(error => console.error(error));
+    dispatch(searchAction(searchFields));
   }
 
   render() {
-    const { filterQuery, filteredProducts, dispatch, productLimit } = this.props;
+    const {
+      dispatch,
+      filterQuery,
+      filteredProducts,
+      searchFields,
+      searchQuery,
+      searchInProgress,
+    } = this.props;
     const apiKey = window.apiKey;
     const shopOrigin = window.shopOrigin;
+    let productList = (<ResourceList
+      items={filteredProducts}
+      renderItem={renderProduct}
+    />);
+
+    if (searchInProgress) {
+      productList = "Searching...";
+    }
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
@@ -35,13 +56,16 @@ class App extends React.Component {
                 <FormLayout.Group>
                   <TextField
                     label="Search product title"
-                    value={filterQuery}
-                    onChange={newQuery => dispatch(filterAction(newQuery))}
+                    value={searchQuery}
+                    onChange={newQuery =>
+                      dispatch(
+                        searchAction({ title: newQuery, limit: searchFields.limit })
+                      )}
                   />
                   <Select
                     label="Search limit"
                     options={['10', '20', '50']}
-                    value={productLimit}
+                    value={searchFields.limit}
                   />
                   <TextField
                     label="Filter by product title"
@@ -54,10 +78,7 @@ class App extends React.Component {
 
             <Layout.Section>
               <Card>
-                <ResourceList
-                  items={filteredProducts}
-                  renderItem={renderProduct}
-                />
+                {productList}
               </Card>
             </Layout.Section>
           </Layout>
@@ -69,6 +90,54 @@ class App extends React.Component {
 
 function renderProduct({ title }) {
   return <ResourceList.Item attributeOne={title} />;
+}
+
+function searchAction(searchFields) {
+  const userId = window.userId;
+  const { title, limit } = searchFields;
+  let params = `limit=${limit}&userId=${userId}`;
+  if (title.length) {
+    params += `title=${title}`;
+  }
+
+  return dispatch => {
+    dispatch(searchStartAction(title));
+    return fetch(`/api/products.json?${params}`)
+      .then(response => response.json())
+      .then(({ products }) => {
+        return dispatch(searchCompleteAction(products));
+      })
+      .catch(error => {
+        dispatch(searchErrorAction(error));
+      });
+  };
+}
+
+function searchCompleteAction(products) {
+  return {
+    type: 'SEARCH_COMPLETE',
+    payload: {
+      products,
+    },
+  };
+}
+
+function searchStartAction(searchQuery) {
+  return {
+    type: 'SEARCH_START',
+    payload: {
+      searchQuery,
+    },
+  };
+}
+
+function searchErrorAction(searchError) {
+  return {
+    type: 'SEARCH_ERROR',
+    payload: {
+      searchError,
+    },
+  };
 }
 
 function filterAction(filterQuery) {

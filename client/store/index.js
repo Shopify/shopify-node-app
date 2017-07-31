@@ -1,14 +1,26 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import logger from 'redux-logger';
 
 const products = [
   { title: 'Awesome concrete box' },
   { title: 'Hard rubber boots' },
 ];
 
+const searchFields = {
+  userId: window.userId,
+  title: '',
+  limit: 20,
+};
+
 const initState = {
   filterQuery: '',
   filteredProducts: products,
+  searchInProgress: false,
+  searchError: null,
+  searchQuery: '',
   products,
+  searchFields,
 };
 
 function exampleAppReducer(state = initState, action) {
@@ -27,14 +39,28 @@ function exampleAppReducer(state = initState, action) {
           return product.title.indexOf(action.payload.filterQuery) !== -1;
         }),
       });
+    case 'SEARCH_START':
+      return Object.assign({}, state, {
+        searchInProgress: true,
+        searchQuery: action.payload.searchQuery,
+      });
+    case 'SEARCH_COMPLETE':
+      return Object.assign({}, state, {
+        searchInProgress: false,
+        products: action.payload.products,
+      });
+    case 'SEARCH_ERROR':
+      return Object.assign({}, state, {
+        searchInProgress: false,
+        searchError: action.payload.searchError,
+      });
     default:
       return state;
   }
 }
 
-const store = createStore(
-  exampleAppReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+const middleware = applyMiddleware(thunkMiddleware, logger);
+
+const store = createStore(exampleAppReducer, middleware);
 
 export default store;
