@@ -63,6 +63,7 @@ class App extends React.Component {
                     label="Search limit"
                     options={['10', '20', '50']}
                     value={searchFields.limit}
+                    onChange={newLimit => dispatch(searchAction({ title: searchFields.title, limit: newLimit }))}
                   />
                   <TextField
                     label="Filter by product title"
@@ -98,7 +99,7 @@ function searchAction(searchFields) {
   }
 
   return (dispatch) => {
-    dispatch(searchStartAction(title));
+    dispatch(searchStartAction(searchFields));
     return fetch(`/api/products.json?${params}`)
       .then(response => response.json())
       .then(({ products }) => {
@@ -119,11 +120,11 @@ function searchCompleteAction(products) {
   };
 }
 
-function searchStartAction(searchQuery) {
+function searchStartAction(searchFields) {
   return {
     type: 'SEARCH_START',
     payload: {
-      searchQuery,
+      searchFields,
     },
   };
 }
@@ -151,8 +152,14 @@ function setAction(products) {
   };
 }
 
-function mapStateToProps({ filterQuery, filteredProducts }) {
-  return { filterQuery, filteredProducts };
+function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchQuery, searchInProgress }) {
+  return {
+    filterQuery,
+    filteredProducts,
+    searchFields,
+    searchQuery,
+    searchInProgress
+  };
 }
 
 export default connect(mapStateToProps)(App);

@@ -3,7 +3,6 @@ import thunkMiddleware from 'redux-thunk';
 import logger from 'redux-logger';
 
 const searchFields = {
-  userId: window.userId,
   title: '',
   limit: 20,
 };
@@ -37,7 +36,7 @@ function exampleAppReducer(state = initState, action) {
     case 'SEARCH_START':
       return Object.assign({}, state, {
         searchInProgress: true,
-        searchQuery: action.payload.searchQuery,
+        searchFields: action.payload.searchFields,
       });
     case 'SEARCH_COMPLETE':
       return Object.assign({}, state, {

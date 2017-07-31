@@ -10,7 +10,7 @@ function renderApp() {
   render(
     <AppContainer>
       <Provider store={store}>
-        <App searchFields={{title: '', limit: 20}} />
+        <App />
       </Provider>
     </AppContainer>,
     document.getElementById('root')
