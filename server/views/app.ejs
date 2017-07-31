@@ -14,10 +14,10 @@
       window.shopOrigin = "https://<%= shop %>"
     </script>
 
-    <script type="text/javascript">
+    <script>
       ShopifyApp.init({
-        apiKey: apiKey,
-        shopOrigin: shopOrigin
+        apiKey: window.apiKey,
+        shopOrigin: window.shopOrigin
       });
     </script>
 
