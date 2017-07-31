@@ -10,6 +10,9 @@
     "pretty": "prettier --single-quote --trailing-comma es5 --write {client,bin,config,server}/**/*.js",
     "precommit": "yarn run pretty"
   },
+  "engines": {
+    "node": "~7.7.3"
+  },
   "browsers": [
     "last 3 chrome versions",
     "last 3 firefox versions",
