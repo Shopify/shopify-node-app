@@ -57,10 +57,7 @@ class App extends React.Component {
                   <TextField
                     label="Search product title"
                     value={searchQuery}
-                    onChange={newQuery =>
-                      dispatch(
-                        searchAction({ title: newQuery, limit: searchFields.limit })
-                      )}
+                    onChange={newQuery => dispatch(searchAction({ title: newQuery, limit: searchFields.limit }))}
                   />
                   <Select
                     label="Search limit"
@@ -97,10 +94,10 @@ function searchAction(searchFields) {
   const { title, limit } = searchFields;
   let params = `limit=${limit}&userId=${userId}`;
   if (title.length) {
-    params += `title=${title}`;
+    params += `&title=${title}`;
   }
 
-  return dispatch => {
+  return (dispatch) => {
     dispatch(searchStartAction(title));
     return fetch(`/api/products.json?${params}`)
       .then(response => response.json())

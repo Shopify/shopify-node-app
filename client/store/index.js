@@ -2,11 +2,6 @@ import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import logger from 'redux-logger';
 
-const products = [
-  { title: 'Awesome concrete box' },
-  { title: 'Hard rubber boots' },
-];
-
 const searchFields = {
   userId: window.userId,
   title: '',
@@ -15,11 +10,11 @@ const searchFields = {
 
 const initState = {
   filterQuery: '',
-  filteredProducts: products,
+  filteredProducts: [],
   searchInProgress: false,
   searchError: null,
   searchQuery: '',
-  products,
+  products: [],
   searchFields,
 };
 
@@ -48,6 +43,8 @@ function exampleAppReducer(state = initState, action) {
       return Object.assign({}, state, {
         searchInProgress: false,
         products: action.payload.products,
+        filterQuery: '',
+        filteredProducts: action.payload.products,
       });
     case 'SEARCH_ERROR':
       return Object.assign({}, state, {
