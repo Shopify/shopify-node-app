@@ -33,6 +33,18 @@ function exampleAppReducer(state = initState, action) {
           return product.title.indexOf(action.payload.filterQuery) !== -1;
         }),
       });
+    case 'CHANGE_QUERY':
+      return Object.assign({}, state, {
+        searchFields: Object.assign({}, state.searchFields, {
+          title: action.payload.query
+        })
+      });
+    case 'CHANGE_LIMIT':
+      return Object.assign({}, state, {
+        searchFields: Object.assign({}, state.searchFields, {
+          limit: action.payload.limit
+        })
+      });
     case 'SEARCH_START':
       return Object.assign({}, state, {
         searchInProgress: true,

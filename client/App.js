@@ -7,6 +7,7 @@ import {
   TextField,
   Select,
   FormLayout,
+  Button,
 } from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
 import { connect } from 'react-redux';
@@ -29,7 +30,6 @@ class App extends React.Component {
       filterQuery,
       filteredProducts,
       searchFields,
-      searchQuery,
       searchInProgress,
     } = this.props;
     const apiKey = window.apiKey;
@@ -53,26 +53,29 @@ class App extends React.Component {
         >
           <Layout sectioned>
             <Layout.Section>
-              <FormLayout>
-                <FormLayout.Group>
-                  <TextField
-                    label="Search product title"
-                    value={searchQuery}
-                    onChange={newQuery => dispatch(searchAction({ title: newQuery, limit: searchFields.limit }))}
-                  />
-                  <Select
-                    label="Search limit"
-                    options={['10', '20', '50']}
-                    value={searchFields.limit}
-                    onChange={newLimit => dispatch(searchAction({ title: searchFields.title, limit: newLimit }))}
-                  />
+              <form onSubmit={handleSubmit}>
+                <FormLayout>
+                  <FormLayout.Group>
+                      <TextField
+                        label="Search product title"
+                        value={searchFields.title}
+                        onChange={newQuery => dispatch(changeQueryAction(newQuery))}
+                      />
+                      <Select
+                        label="Search limit"
+                        options={['10', '20', '50']}
+                        value={searchFields.limit}
+                        onChange={newLimit => dispatch(changeLimitAction(newLimit))}
+                      />
+                  </FormLayout.Group>
+
                   <TextField
                     label="Filter by product title"
                     value={filterQuery}
                     onChange={newQuery => dispatch(filterAction(newQuery))}
                   />
-                </FormLayout.Group>
-              </FormLayout>
+                </FormLayout>
+              </form>
             </Layout.Section>
 
             <Layout.Section>
@@ -85,8 +88,32 @@ class App extends React.Component {
   }
 }
 
+function handleSubmit(event) {
+  event.preventDefault();
+  console.log('test')
+  dispatch(searchAction({ title: searchFields.title, limit: searchFields.limit }));
+}
+
 function renderProduct({ title }) {
   return <ResourceList.Item attributeOne={title} />;
+}
+
+function changeQueryAction(query) {
+  return {
+    type: 'CHANGE_QUERY',
+    payload: {
+      query
+    }
+  }
+}
+
+function changeLimitAction(limit) {
+  return {
+    type: 'CHANGE_LIMIT',
+    payload: {
+      limit
+    }
+  }
 }
 
 function searchAction(searchFields) {
@@ -151,12 +178,11 @@ function setAction(products) {
   };
 }
 
-function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchQuery, searchInProgress }) {
+function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchInProgress }) {
   return {
     filterQuery,
     filteredProducts,
     searchFields,
-    searchQuery,
     searchInProgress
   };
 }
