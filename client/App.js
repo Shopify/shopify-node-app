@@ -34,14 +34,15 @@ class App extends React.Component {
     } = this.props;
     const apiKey = window.apiKey;
     const shopOrigin = window.shopOrigin;
-    let productList = (<ResourceList
-      items={filteredProducts}
-      renderItem={renderProduct}
-    />);
-
-    if (searchInProgress) {
-      productList = "Searching...";
-    }
+    const productListJSX = (
+      <Card>
+        <ResourceList
+          items={filteredProducts}
+          renderItem={renderProduct}
+        />
+      </Card>
+    );
+    const searchIndicatorJSX = "Searching...";
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
@@ -75,9 +76,7 @@ class App extends React.Component {
             </Layout.Section>
 
             <Layout.Section>
-              <Card>
-                {productList}
-              </Card>
+              {searchInProgress ? searchIndicatorJSX : productListJSX}
             </Layout.Section>
           </Layout>
         </Page>
