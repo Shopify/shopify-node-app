@@ -20,42 +20,50 @@ const initState = {
 function exampleAppReducer(state = initState, action) {
   switch (action.type) {
     case 'FILTER':
-      return Object.assign({}, state, {
+      return {
+        ...state,
         filterQuery: action.payload.filterQuery,
         products: state.products,
         filteredProducts: state.products.filter(product => {
           return product.title.indexOf(action.payload.filterQuery) !== -1;
         }),
-      });
+      }
     case 'CHANGE_QUERY':
-      return Object.assign({}, state, {
-        searchFields: Object.assign({}, state.searchFields, {
-          title: action.payload.query
-        })
-      });
+      return {
+        ...state,
+        searchFields: {
+          ...state.searchFields,
+          title: action.payload.query,
+        }
+      }
     case 'CHANGE_LIMIT':
-      return Object.assign({}, state, {
-        searchFields: Object.assign({}, state.searchFields, {
-          limit: action.payload.limit
-        })
-      });
+      return {
+        ...state,
+        searchFields: {
+          ...state.searchFields,
+          limit: action.payload.limit,
+        }
+      }
     case 'SEARCH_START':
-      return Object.assign({}, state, {
+      return {
+        ...state,
         searchInProgress: true,
         searchFields: action.payload.searchFields,
-      });
+      }
     case 'SEARCH_COMPLETE':
-      return Object.assign({}, state, {
+      return {
+        ...state,
         searchInProgress: false,
         products: action.payload.products,
         filterQuery: '',
         filteredProducts: action.payload.products,
-      });
+      }
     case 'SEARCH_ERROR':
-      return Object.assign({}, state, {
+      return {
+        ...state,
         searchInProgress: false,
         searchError: action.payload.searchError,
-      });
+      }
     default:
       return state;
   }
