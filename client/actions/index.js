@@ -2,18 +2,18 @@ export function updateSearchTitle(title) {
   return {
     type: 'UPDATE_SEARCH_TITLE',
     payload: {
-      title
-    }
-  }
+      title,
+    },
+  };
 }
 
 export function updateSearchLimit(limit) {
   return {
     type: 'UPDATE_SEARCH_LIMIT',
     payload: {
-      limit
-    }
-  }
+      limit,
+    },
+  };
 }
 
 export function searchAction(searchFields) {
@@ -24,7 +24,7 @@ export function searchAction(searchFields) {
     params += `&title=${title}`;
   }
 
-  return (dispatch) => {
+  return dispatch => {
     dispatch(searchStartAction(searchFields));
     return fetch(`/api/products.json?${params}`)
       .then(response => response.json())
