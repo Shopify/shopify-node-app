@@ -53,29 +53,29 @@ class App extends React.Component {
         >
           <Layout sectioned>
             <Layout.Section>
-              <form onSubmit={handleSubmit}>
-                <FormLayout>
-                  <FormLayout.Group>
-                      <TextField
-                        label="Search product title"
-                        value={searchFields.title}
-                        onChange={newQuery => dispatch(changeQueryAction(newQuery))}
-                      />
-                      <Select
-                        label="Search limit"
-                        options={['10', '20', '50']}
-                        value={searchFields.limit}
-                        onChange={newLimit => dispatch(changeLimitAction(newLimit))}
-                      />
-                  </FormLayout.Group>
-
+              <FormLayout>
+                <FormLayout.Group>
                   <TextField
-                    label="Filter by product title"
-                    value={filterQuery}
-                    onChange={newQuery => dispatch(filterAction(newQuery))}
+                    label="Search product title"
+                    value={searchFields.title}
+                    onChange={newQuery => dispatch(changeQueryAction(newQuery))}
                   />
-                </FormLayout>
-              </form>
+                  <Select
+                    label="Search limit"
+                    options={['10', '20', '50']}
+                    value={searchFields.limit}
+                    onChange={newLimit => dispatch(changeLimitAction(newLimit))}
+                  />
+                </FormLayout.Group>
+
+                <Button primary onClick={() => dispatch(searchAction({ title: searchFields.title, limit: searchFields.limit }))}>Search</Button>
+
+                <TextField
+                  label="Filter by product title"
+                  value={filterQuery}
+                  onChange={newQuery => dispatch(filterAction(newQuery))}
+                />
+              </FormLayout>
             </Layout.Section>
 
             <Layout.Section>
@@ -86,12 +86,6 @@ class App extends React.Component {
       </EmbeddedApp>
     );
   }
-}
-
-function handleSubmit(event) {
-  event.preventDefault();
-  console.log('test')
-  dispatch(searchAction({ title: searchFields.title, limit: searchFields.limit }));
 }
 
 function renderProduct({ title }) {
