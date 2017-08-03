@@ -1,40 +1,77 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import logger from 'redux-logger';
 
-const products = [
-  { title: 'Awesome concrete box' },
-  { title: 'Hard rubber boots' },
-];
+const searchFields = {
+  title: '',
+  limit: 20,
+};
 
 const initState = {
-  query: '',
-  filteredProducts: products,
-  products,
+  filterQuery: '',
+  filteredProducts: [],
+  searchInProgress: false,
+  searchError: null,
+  products: [],
+  searchFields,
 };
 
 function exampleAppReducer(state = initState, action) {
   switch (action.type) {
-    case 'SET':
+    case 'FILTER':
       return {
-        query: '',
-        products: action.payload.products,
-        filteredProducts: action.payload.products,
-      };
-    case 'SEARCH':
-      return Object.assign({}, state, {
-        query: action.payload.query,
+        ...state,
+        filterQuery: action.payload.filterQuery,
         products: state.products,
         filteredProducts: state.products.filter(product => {
-          return product.title.indexOf(action.payload.query) !== -1;
+          return product.title.indexOf(action.payload.filterQuery) !== -1;
         }),
-      });
+      };
+    case 'UPDATE_SEARCH_TITLE':
+      return {
+        ...state,
+        searchFields: {
+          ...state.searchFields,
+          title: action.payload.title,
+        },
+      };
+    case 'UPDATE_SEARCH_LIMIT':
+      return {
+        ...state,
+        searchFields: {
+          ...state.searchFields,
+          limit: action.payload.limit,
+        },
+      };
+    case 'SEARCH_START':
+      return {
+        ...state,
+        searchInProgress: true,
+        searchError: null,
+        searchFields: action.payload.searchFields,
+      };
+    case 'SEARCH_COMPLETE':
+      return {
+        ...state,
+        searchInProgress: false,
+        searchError: null,
+        products: action.payload.products,
+        filterQuery: '',
+        filteredProducts: action.payload.products,
+      };
+    case 'SEARCH_ERROR':
+      return {
+        ...state,
+        searchInProgress: false,
+        searchError: action.payload.searchError,
+      };
     default:
       return state;
   }
 }
 
-const store = createStore(
-  exampleAppReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+const middleware = applyMiddleware(thunkMiddleware, logger);
+
+const store = createStore(exampleAppReducer, middleware);
 
 export default store;

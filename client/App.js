@@ -1,26 +1,49 @@
 import * as React from 'react';
-import { Page, Layout, Card, ResourceList, TextField } from '@shopify/polaris';
+import {
+  Page,
+  Layout,
+  Card,
+  ResourceList,
+  TextField,
+  Select,
+  FormLayout,
+  Button,
+} from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
+import {
+  updateSearchTitle,
+  updateSearchLimit,
+  searchAction,
+  filterAction,
+} from './actions';
 import { connect } from 'react-redux';
 
 const userId = window.userId;
 
 class App extends React.Component {
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, searchFields } = this.props;
 
-    fetch(`/api/products.json?limit=10&userId=${userId}`)
-      .then(response => response.json())
-      .then(({ products }) => {
-        return dispatch(setAction(products));
-      })
-      .catch(error => console.error(error));
+    dispatch(searchAction(searchFields));
   }
 
   render() {
-    const { query, filteredProducts, dispatch } = this.props;
+    const {
+      dispatch,
+      filterQuery,
+      filteredProducts,
+      searchFields,
+      searchInProgress,
+      searchError,
+    } = this.props;
     const apiKey = window.apiKey;
     const shopOrigin = window.shopOrigin;
+    const productListJSX = (
+      <Card>
+        <ResourceList items={filteredProducts} renderItem={renderProduct} />
+      </Card>
+    );
+    const searchIndicatorJSX = 'Searching...';
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
@@ -31,20 +54,45 @@ class App extends React.Component {
         >
           <Layout sectioned>
             <Layout.Section>
-              <TextField
-                label="Search products"
-                value={query}
-                onChange={newQuery => dispatch(searchAction(newQuery))}
-              />
+              <FormLayout>
+                <FormLayout.Group>
+                  <TextField
+                    label="Search product title"
+                    value={searchFields.title}
+                    onChange={title => dispatch(updateSearchTitle(title))}
+                  />
+                  <Select
+                    label="Search limit"
+                    options={['10', '20', '50']}
+                    value={searchFields.limit}
+                    onChange={limit => dispatch(updateSearchLimit(limit))}
+                  />
+                </FormLayout.Group>
+
+                <Button
+                  primary
+                  onClick={() =>
+                    dispatch(
+                      searchAction({
+                        title: searchFields.title,
+                        limit: searchFields.limit,
+                      })
+                    )}
+                >
+                  Search
+                </Button>
+
+                <TextField
+                  label="Filter by product title"
+                  value={filterQuery}
+                  onChange={newQuery => dispatch(filterAction(newQuery))}
+                />
+              </FormLayout>
             </Layout.Section>
 
             <Layout.Section>
-              <Card>
-                <ResourceList
-                  items={filteredProducts}
-                  renderItem={renderProduct}
-                />
-              </Card>
+              {searchInProgress ? searchIndicatorJSX : productListJSX}
+              {searchError}
             </Layout.Section>
           </Layout>
         </Page>
@@ -57,22 +105,20 @@ function renderProduct({ title }) {
   return <ResourceList.Item attributeOne={title} />;
 }
 
-function searchAction(query) {
+function mapStateToProps({
+  filterQuery,
+  filteredProducts,
+  searchFields,
+  searchInProgress,
+  searchError,
+}) {
   return {
-    type: 'SEARCH',
-    payload: { query },
+    filterQuery,
+    filteredProducts,
+    searchFields,
+    searchInProgress,
+    searchError,
   };
-}
-
-function setAction(products) {
-  return {
-    type: 'SET',
-    payload: { products },
-  };
-}
-
-function mapStateToProps({ query, filteredProducts }) {
-  return { query, filteredProducts };
 }
 
 export default connect(mapStateToProps)(App);

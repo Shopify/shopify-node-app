@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const chalk = require('chalk')
+const chalk = require('chalk');
 const http = require('http');
 const app = require('../server');
 
@@ -8,7 +8,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
-server.listen(port, (err) => {
+server.listen(port, err => {
   if (err) {
     return console.log('😫', chalk.red(err));
   }
