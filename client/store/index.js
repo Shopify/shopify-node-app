@@ -19,12 +19,6 @@ const initState = {
 
 function exampleAppReducer(state = initState, action) {
   switch (action.type) {
-    case 'SET':
-      return {
-        filterQuery: '',
-        products: action.payload.products,
-        filteredProducts: action.payload.products,
-      };
     case 'FILTER':
       return Object.assign({}, state, {
         filterQuery: action.payload.filterQuery,

@@ -165,13 +165,6 @@ function filterAction(filterQuery) {
   };
 }
 
-function setAction(products) {
-  return {
-    type: 'SET',
-    payload: { products },
-  };
-}
-
 function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchInProgress }) {
   return {
     filterQuery,
