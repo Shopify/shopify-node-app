@@ -15,17 +15,14 @@ import {
   updateSearchLimit,
   searchAction,
   filterAction,
-} from './actions'
+} from './actions';
 import { connect } from 'react-redux';
 
 const userId = window.userId;
 
 class App extends React.Component {
   componentDidMount() {
-    const {
-      dispatch,
-      searchFields
-    } = this.props;
+    const { dispatch, searchFields } = this.props;
 
     dispatch(searchAction(searchFields));
   }
@@ -43,13 +40,10 @@ class App extends React.Component {
     const shopOrigin = window.shopOrigin;
     const productListJSX = (
       <Card>
-        <ResourceList
-          items={filteredProducts}
-          renderItem={renderProduct}
-        />
+        <ResourceList items={filteredProducts} renderItem={renderProduct} />
       </Card>
     );
-    const searchIndicatorJSX = "Searching...";
+    const searchIndicatorJSX = 'Searching...';
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
@@ -75,7 +69,18 @@ class App extends React.Component {
                   />
                 </FormLayout.Group>
 
-                <Button primary onClick={() => dispatch(searchAction({ title: searchFields.title, limit: searchFields.limit }))}>Search</Button>
+                <Button
+                  primary
+                  onClick={() =>
+                    dispatch(
+                      searchAction({
+                        title: searchFields.title,
+                        limit: searchFields.limit,
+                      })
+                    )}
+                >
+                  Search
+                </Button>
 
                 <TextField
                   label="Filter by product title"
@@ -100,7 +105,13 @@ function renderProduct({ title }) {
   return <ResourceList.Item attributeOne={title} />;
 }
 
-function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchInProgress, searchError }) {
+function mapStateToProps({
+  filterQuery,
+  filteredProducts,
+  searchFields,
+  searchInProgress,
+  searchError,
+}) {
   return {
     filterQuery,
     filteredProducts,
