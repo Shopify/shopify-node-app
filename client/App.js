@@ -11,8 +11,8 @@ import {
 } from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
 import {
-  changeQueryAction,
-  changeLimitAction,
+  updateSearchTitle,
+  updateSearchLimit,
   searchAction,
   filterAction,
 } from './actions'
@@ -65,13 +65,13 @@ class App extends React.Component {
                   <TextField
                     label="Search product title"
                     value={searchFields.title}
-                    onChange={newQuery => dispatch(changeQueryAction(newQuery))}
+                    onChange={title => dispatch(updateSearchTitle(title))}
                   />
                   <Select
                     label="Search limit"
                     options={['10', '20', '50']}
                     value={searchFields.limit}
-                    onChange={newLimit => dispatch(changeLimitAction(newLimit))}
+                    onChange={limit => dispatch(updateSearchLimit(limit))}
                   />
                 </FormLayout.Group>
 

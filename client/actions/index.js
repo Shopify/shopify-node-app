@@ -1,15 +1,15 @@
-export function changeQueryAction(query) {
+export function updateSearchTitle(title) {
   return {
-    type: 'CHANGE_QUERY',
+    type: 'UPDATE_SEARCH_TITLE',
     payload: {
-      query
+      title
     }
   }
 }
 
-export function changeLimitAction(limit) {
+export function updateSearchLimit(limit) {
   return {
-    type: 'CHANGE_LIMIT',
+    type: 'UPDATE_SEARCH_LIMIT',
     payload: {
       limit
     }

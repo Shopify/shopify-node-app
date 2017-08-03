@@ -27,15 +27,15 @@ function exampleAppReducer(state = initState, action) {
           return product.title.indexOf(action.payload.filterQuery) !== -1;
         }),
       }
-    case 'CHANGE_QUERY':
+    case 'UPDATE_SEARCH_TITLE':
       return {
         ...state,
         searchFields: {
           ...state.searchFields,
-          title: action.payload.query,
+          title: action.payload.title,
         }
       }
-    case 'CHANGE_LIMIT':
+    case 'UPDATE_SEARCH_LIMIT':
       return {
         ...state,
         searchFields: {
