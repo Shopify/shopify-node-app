@@ -12,7 +12,6 @@ const initState = {
   filteredProducts: [],
   searchInProgress: false,
   searchError: null,
-  searchQuery: '',
   products: [],
   searchFields,
 };
@@ -48,12 +47,14 @@ function exampleAppReducer(state = initState, action) {
       return {
         ...state,
         searchInProgress: true,
+        searchError: null,
         searchFields: action.payload.searchFields,
       }
     case 'SEARCH_COMPLETE':
       return {
         ...state,
         searchInProgress: false,
+        searchError: null,
         products: action.payload.products,
         filterQuery: '',
         filteredProducts: action.payload.products,

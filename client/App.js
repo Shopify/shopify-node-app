@@ -31,6 +31,7 @@ class App extends React.Component {
       filteredProducts,
       searchFields,
       searchInProgress,
+      searchError,
     } = this.props;
     const apiKey = window.apiKey;
     const shopOrigin = window.shopOrigin;
@@ -80,6 +81,7 @@ class App extends React.Component {
 
             <Layout.Section>
               {searchInProgress ? searchIndicatorJSX : productListJSX}
+              {searchError}
             </Layout.Section>
           </Layout>
         </Page>
@@ -165,12 +167,13 @@ function filterAction(filterQuery) {
   };
 }
 
-function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchInProgress }) {
+function mapStateToProps({ filterQuery, filteredProducts, searchFields, searchInProgress, searchError }) {
   return {
     filterQuery,
     filteredProducts,
     searchFields,
-    searchInProgress
+    searchInProgress,
+    searchError,
   };
 }
 
