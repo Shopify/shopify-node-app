@@ -4,6 +4,7 @@ require('dotenv').config();
 const fs = require('fs');
 const express = require('express');
 const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
 const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -29,7 +30,8 @@ const shopifyConfig = {
 };
 
 const app = express();
-const isDeveloping = process.env.NODE_ENV !== 'production';
+const isDevelopment = process.env.NODE_ENV !== 'production';
+console.log('isDevelopment', isDevelopment)
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -37,19 +39,22 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
-  session({ secret: 'keyboard cat', resave: true, saveUninitialized: false })
+  session({
+    store: new RedisStore(),
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: false,
+  })
 );
 
 app.get('/install', function(req, res) {
   res.render('install');
 });
-
 app.use('/auth/shopify', shopifyAuth(shopifyConfig));
-
 app.use('/api', shopifyApiProxy);
 
 // Run webpack hot reloading in dev
-if (isDeveloping) {
+if (isDevelopment) {
   const compiler = webpack(config);
   const middleware = webpackMiddleware(compiler, {
     hot: true,
@@ -69,7 +74,8 @@ if (isDeveloping) {
   app.use(middleware);
   app.use(webpackHotMiddleware(compiler));
 } else {
-  app.use(express.static(__dirname + '/assets'));
+  const staticPath = path.resolve(__dirname, '../assets');
+  app.use('/assets', express.static(staticPath));
 }
 
 app.get('/', function(request, response) {

@@ -2,28 +2,54 @@ const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
+const isDevelopment = process.env.NODE_ENV !== 'production';
+console.log('isDevelopment?', isDevelopment)
+
+const plugins = isDevelopment
+  ? [
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify('development'),
+      }),
+      new webpack.HotModuleReplacementPlugin(),
+    ]
+  : [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false
+      },
+      minimize: true
+    })
+  ];
+const sourceMap = isDevelopment;
+
+const extraEntryFiles = isDevelopment
+  ? [
+      'react-hot-loader/patch',
+      'webpack-hot-middleware/client'
+    ]
+  : [];
+
 module.exports = {
+  plugins,
   target: 'web',
   devtool: 'eval',
   entry: {
     main: [
-      'react-hot-loader/patch',
       '@shopify/polaris/styles.css',
-      'webpack-hot-middleware/client',
       path.resolve(__dirname, '../client/index.js'),
+      ...extraEntryFiles
     ],
   },
   output: {
     filename: '[name].js',
+    path: path.resolve(__dirname, '../assets'),
     publicPath: '/assets/',
     libraryTarget: 'var',
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
-    }),
-    new webpack.HotModuleReplacementPlugin(),
-  ],
   module: {
     loaders: [
       {
@@ -41,7 +67,7 @@ module.exports = {
           {
             loader: 'css-loader',
             query: {
-              sourceMap: false,
+              sourceMap,
               modules: true,
               importLoaders: 1,
               localIdentName: '[name]-[local]_[hash:base64:5]',
@@ -51,7 +77,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               plugins: () => autoprefixer(),
-              sourceMap: false,
+              sourceMap,
             },
           },
         ],
@@ -66,7 +92,7 @@ module.exports = {
           {
             loader: 'css-loader',
             query: {
-              sourceMap: false,
+              sourceMap,
               modules: true,
               importLoaders: 1,
               localIdentName: '[local]',
