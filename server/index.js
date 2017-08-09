@@ -31,7 +31,6 @@ const shopifyConfig = {
 
 const app = express();
 const isDevelopment = process.env.NODE_ENV !== 'production';
-console.log('isDevelopment', isDevelopment)
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

@@ -3,8 +3,8 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-console.log('isDevelopment?', isDevelopment)
 
+const sourceMap = isDevelopment;
 const plugins = isDevelopment
   ? [
       new webpack.DefinePlugin({
@@ -13,24 +13,20 @@ const plugins = isDevelopment
       new webpack.HotModuleReplacementPlugin(),
     ]
   : [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-    }),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false
-      },
-      minimize: true
-    })
-  ];
-const sourceMap = isDevelopment;
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+      new webpack.optimize.DedupePlugin(),
+      new webpack.optimize.UglifyJsPlugin({
+        compressor: {
+          warnings: false,
+        },
+        minimize: true,
+      }),
+    ];
 
 const extraEntryFiles = isDevelopment
-  ? [
-      'react-hot-loader/patch',
-      'webpack-hot-middleware/client'
-    ]
+  ? ['react-hot-loader/patch', 'webpack-hot-middleware/client']
   : [];
 
 module.exports = {
@@ -41,7 +37,7 @@ module.exports = {
     main: [
       '@shopify/polaris/styles.css',
       path.resolve(__dirname, '../client/index.js'),
-      ...extraEntryFiles
+      ...extraEntryFiles,
     ],
   },
   output: {
