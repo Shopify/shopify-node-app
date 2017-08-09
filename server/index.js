@@ -80,7 +80,7 @@ if (isDevelopment) {
 app.get('/', function(request, response) {
   const { session: { shop, accessToken } } = request;
   if (!accessToken) {
-    response.redirect(`/auth/shopify?shop=${request.query.shop}`);
+    return response.redirect(`/auth/shopify?shop=${request.query.shop}`);
   }
 
   persistentStore.storeUser({ accessToken, shop }, (err, userId) => {

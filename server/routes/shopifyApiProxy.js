@@ -10,11 +10,11 @@ module.exports = function shopifyApiProxy(request, response, next) {
 
   return store.getToken(userId, (err, userData) => {
     if (err) {
-      return response.status(500);
+      return response.status(500).send(err);
     }
 
     if (userData == null) {
-      return response.status(401);
+      return response.status(401).send('User not found');
     }
 
     const { shop, accessToken } = userData;
@@ -26,7 +26,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
     });
 
     if (!inAllowed) {
-      return response.status(403);
+      return response.status(403).send('Endpoint not in whitelist');
     }
 
     const fetchOptions = {
