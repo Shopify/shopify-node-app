@@ -5,50 +5,59 @@ const ALLOWED_URLS = ['/products', '/orders'];
 
 module.exports = function shopifyApiProxy(request, response, next) {
   const { query, method, path, body } = request;
+  const { shop, token } = query;
 
-  const { userId } = query;
-
-  return store.getToken(userId, (err, userData) => {
+  store.verifyClientToken({ shop, token }, (err, valid) => {
     if (err) {
       return response.status(500).send(err);
     }
 
-    if (userData == null) {
-      return response.status(401).send('User not found');
+    if (valid === false) {
+      return response.status(401).send('Client token invalid');
     }
 
-    const { shop, accessToken } = userData;
+    store.getUser({ shop }, (err, userData) => {
+      if (err) {
+        return response.status(500).send(err);
+      }
 
-    const strippedPath = path.split('?')[0].split('.json')[0];
+      if (userData == null) {
+        return response.status(401).send('User not found');
+      }
 
-    const inAllowed = ALLOWED_URLS.some(resource => {
-      return strippedPath === resource;
-    });
+      const { accessToken } = userData;
 
-    if (!inAllowed) {
-      return response.status(403).send('Endpoint not in whitelist');
-    }
+      const strippedPath = path.split('?')[0].split('.json')[0];
 
-    const fetchOptions = {
-      method,
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': accessToken,
-      },
-    };
+      const inAllowed = ALLOWED_URLS.some(resource => {
+        return strippedPath === resource;
+      });
 
-    fetchWithParams(
-      `https://${shop}/admin${path}`,
-      fetchOptions,
-      query
-    ).then(remoteResponse => {
-      remoteResponse
-        .json()
-        .then(responseBody => {
-          response.status(remoteResponse.status).send(responseBody);
-        })
-        .catch(err => response.err(err));
+      if (!inAllowed) {
+        return response.status(403).send('Endpoint not in whitelist');
+      }
+
+      const fetchOptions = {
+        method,
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': accessToken,
+        },
+      };
+
+      fetchWithParams(
+        `https://${shop}/admin${path}`,
+        fetchOptions,
+        query
+      ).then(remoteResponse => {
+        remoteResponse
+          .json()
+          .then(responseBody => {
+            response.status(remoteResponse.status).send(responseBody);
+          })
+          .catch(err => response.err(err));
+      });
     });
   });
 };

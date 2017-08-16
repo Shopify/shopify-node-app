@@ -17,9 +17,9 @@ export function updateSearchLimit(limit) {
 }
 
 export function searchAction(searchFields) {
-  const userId = window.userId;
+  const { token, shop } = window;
   const { title, limit } = searchFields;
-  let params = `limit=${limit}&userId=${userId}`;
+  let params = `limit=${limit}&token=${token}&shop=${shop}`;
   if (title.length) {
     params += `&title=${title}`;
   }

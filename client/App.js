@@ -18,8 +18,6 @@ import {
 } from './actions';
 import { connect } from 'react-redux';
 
-const userId = window.userId;
-
 class App extends React.Component {
   componentDidMount() {
     const { dispatch, searchFields } = this.props;

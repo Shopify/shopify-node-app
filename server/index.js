@@ -16,21 +16,29 @@ const config = require('../config/webpack.config.js');
 
 const shopifyAuth = require('./routes/shopifyAuth');
 const shopifyApiProxy = require('./routes/shopifyApiProxy');
+const webhookRouter = require('./routes/webhooks');
 const persistentStore = require('./persistentStore');
 
+const {
+  SHOPIFY_APP_KEY,
+  SHOPIFY_APP_HOST,
+  SHOPIFY_APP_SECRET,
+  NODE_ENV,
+} = process.env;
+
 const shopifyConfig = {
-  host: process.env.SHOPIFY_APP_HOST,
-  apiKey: process.env.SHOPIFY_APP_KEY,
-  secret: process.env.SHOPIFY_APP_SECRET,
+  host: SHOPIFY_APP_HOST,
+  apiKey: SHOPIFY_APP_KEY,
+  secret: SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
   afterAuth(request, response) {
-    // do stuff like register webhooks here //
+    //TODO: install webhook
     return response.redirect('/');
   },
 };
 
 const app = express();
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const isDevelopment = NODE_ENV !== 'production';
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -40,17 +48,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   session({
     store: new RedisStore(),
-    secret: 'keyboard cat',
+    secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,
   })
 );
 
-app.get('/install', function(req, res) {
-  res.render('install');
-});
+app.get('/install', (req, res) => res.render('install'));
 app.use('/auth/shopify', shopifyAuth(shopifyConfig));
 app.use('/api', shopifyApiProxy);
+app.use('/webhooks', webhookRouter);
 
 // Run webpack hot reloading in dev
 if (isDevelopment) {
@@ -83,7 +90,7 @@ app.get('/', function(request, response) {
     return response.redirect(`/auth/shopify?shop=${request.query.shop}`);
   }
 
-  persistentStore.storeUser({ accessToken, shop }, (err, userId) => {
+  persistentStore.storeUser({ accessToken, shop }, (err, token) => {
     if (err) {
       return console.error('🔴 Error creating local token', err);
     }
@@ -92,7 +99,7 @@ app.get('/', function(request, response) {
       title: 'Shopify Node App',
       apiKey: shopifyConfig.apiKey,
       shop: request.session.shop,
-      userId: userId,
+      token: token,
     });
   });
 });
