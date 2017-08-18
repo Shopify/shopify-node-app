@@ -1,5 +1,5 @@
 const { URL } = require('url');
-const store = require('../persistentStore');
+const shopStore = require('../shopStore');
 
 const ALLOWED_URLS = ['/products', '/orders'];
 
@@ -7,7 +7,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
   const { query, method, path, body } = request;
   const { shop, token } = query;
 
-  store.verifyClientToken({ shop, token }, (err, valid) => {
+  shopStore.verifyClientToken({ shop, token }, (err, valid) => {
     if (err) {
       return response.status(500).send(err);
     }
@@ -16,7 +16,7 @@ module.exports = function shopifyApiProxy(request, response, next) {
       return response.status(401).send('Client token invalid');
     }
 
-    store.getUser({ shop }, (err, userData) => {
+    shopStore.getShop({ shop }, (err, userData) => {
       if (err) {
         return response.status(500).send(err);
       }
@@ -46,18 +46,15 @@ module.exports = function shopifyApiProxy(request, response, next) {
         },
       };
 
-      fetchWithParams(
-        `https://${shop}/admin${path}`,
-        fetchOptions,
-        query
-      ).then(remoteResponse => {
-        remoteResponse
-          .json()
-          .then(responseBody => {
-            response.status(remoteResponse.status).send(responseBody);
-          })
-          .catch(err => response.err(err));
-      });
+      fetchWithParams(`https://${shop}/admin${path}`, fetchOptions, query)
+        .then((remoteResponse) => {
+          const {status} = remoteResponse
+          return Promise.all([remoteResponse.json(), status]);
+        })
+        .then(([responseBody, status]) => {
+          response.status(status).send(responseBody);
+        })
+        .catch(err => response.err(err));
     });
   });
 };

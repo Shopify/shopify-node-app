@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const store = require('../persistentStore');
+const shopStore = require('../shopStore');
 
 const { SHOPIFY_APP_SECRET } = process.env;
 
@@ -20,7 +20,7 @@ function withWebhook(request, response, next) {
     return response.status(401).send("Request doesn't pass HMAC validation");
   }
 
-  store.getUser({ shop: shopDomain }, (error, { accessToken }) => {
+  shopStore.getShop({ shop: shopDomain }, (error, { accessToken }) => {
     if (error) {
       next(error);
     }
