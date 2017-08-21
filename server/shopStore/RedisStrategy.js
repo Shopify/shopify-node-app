@@ -1,13 +1,13 @@
 const Redis = require('redis');
-const uuid = require('uuid/v1');
 
-module.exports = class RedisStore {
+module.exports = class RedisStrategy {
   constructor() {
     this.client = Redis.createClient();
   }
 
-  storeShop({ shop, accessToken }, done) {
-    redis.hmset(shop, { accessToken, clientToken }, err => {
+  storeShop({ shop, accessToken, data = {} }, done) {
+    const shopData = Object.assign({}, { accessToken }, data);
+    redis.hmset(shop, shopData, err => {
       if (err) {
         done(err);
       }
@@ -17,26 +17,12 @@ module.exports = class RedisStore {
   }
 
   getShop({ shop }, done) {
-    redis.hgetall(shop, (err, { clientToken, accessToken }) => {
+    redis.hgetall(shop, (err, shopData) => {
       if (err) {
         return done(err);
       }
 
-      done(null, { clientToken, accessToken });
+      done(null, shopData);
     });
   }
-
-  verifyClientToken({ shop, token }, done) {
-    redis.hgetall(shop, (err, { accessToken, clientToken }) => {
-      if (err) {
-        return done(err);
-      }
-
-      if (clientToken !== token) {
-        return done(null, false);
-      }
-
-      return done(null, true);
-    });
-  }
-}
+};

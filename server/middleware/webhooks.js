@@ -4,7 +4,6 @@ const shopStore = require('../shopStore');
 const { SHOPIFY_APP_SECRET } = process.env;
 
 function withWebhook(request, response, next) {
-  console.log('I am webhook');
   const { body: data } = request;
   const hmac = request.get('X-Shopify-Hmac-Sha256');
   const topic = request.get('X-Shopify-Topic');

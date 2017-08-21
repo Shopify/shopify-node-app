@@ -1,15 +1,16 @@
-const uuid = require('uuid/v1');
-
-module.exports = class MemoryStore {
+module.exports = class MemoryStrategy {
   constructor() {
     this.store = {};
   }
 
-  storeShop({ shop, accessToken }, done) {
-    this.store[shop] = {
-      accessToken,
-      clientToken: uuid(),
-    };
+  storeShop({ shop, accessToken, data = {} }, done) {
+    this.store[shop] = Object.assign(
+      {},
+      {
+        accessToken,
+      },
+      data
+    );
 
     return done(null, this.store[shop]);
   }
@@ -17,9 +18,4 @@ module.exports = class MemoryStore {
   getShop({ shop }, done) {
     return done(null, this.store[shop]);
   }
-
-  verifyClientToken({ shop, token }, done) {
-    const {clientToken} = this.store[shop];
-    return done(null, this.store[shop]);
-  }
-}
+};

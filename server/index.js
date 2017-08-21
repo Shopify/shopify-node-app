@@ -14,7 +14,7 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const shopifyAuth = require('./routes/shopifyAuth');
+const { shopifyAuthRouter, withShop } = require('./routes/shopifyAuth');
 const shopifyApiProxy = require('./routes/shopifyApiProxy');
 const webhookRouter = require('./routes/webhooks');
 const shopStore = require('./shopStore');
@@ -32,8 +32,14 @@ const shopifyConfig = {
   secret: SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
   afterAuth(request, response) {
+    const { session: { accessToken, shop } } = request;
     //TODO: install webhook
-    return response.redirect('/');
+    shopStore.storeShop({ accessToken, shop }, (err, token) => {
+      if (err) {
+        console.error('🔴 Error storing shop data', err);
+      }
+      return response.redirect('/');
+    });
   },
 };
 
@@ -47,7 +53,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   session({
-    store: new RedisStore(),
+    store: isDevelopment ? undefined : new RedisStore(),
     secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,
@@ -55,9 +61,9 @@ app.use(
 );
 
 app.get('/install', (req, res) => res.render('install'));
-app.use('/auth/shopify', shopifyAuth(shopifyConfig));
-app.use('/api', shopifyApiProxy);
+app.use('/auth/shopify', shopifyAuthRouter(shopifyConfig));
 app.use('/webhooks', webhookRouter);
+app.use('/api', withShop({ redirect: false }), shopifyApiProxy);
 
 // Run webpack hot reloading in dev
 if (isDevelopment) {
@@ -84,23 +90,16 @@ if (isDevelopment) {
   app.use('/assets', express.static(staticPath));
 }
 
-app.get('/', function(request, response) {
+app.get('/', withShop(), function(request, response) {
   const { session: { shop, accessToken } } = request;
   if (!accessToken) {
     return response.redirect(`/auth/shopify?shop=${request.query.shop}`);
   }
 
-  shopStore.storeShop({ accessToken, shop }, (err, token) => {
-    if (err) {
-      return console.error('🔴 Error creating local token', err);
-    }
-
-    return response.render('app', {
-      title: 'Shopify Node App',
-      apiKey: shopifyConfig.apiKey,
-      shop: request.session.shop,
-      token: token,
-    });
+  response.render('app', {
+    title: 'Shopify Node App',
+    apiKey: shopifyConfig.apiKey,
+    shop: request.session.shop,
   });
 });
 

@@ -17,16 +17,18 @@ export function updateSearchLimit(limit) {
 }
 
 export function searchAction(searchFields) {
-  const { token, shop } = window;
   const { title, limit } = searchFields;
-  let params = `limit=${limit}&token=${token}&shop=${shop}`;
+  let params = `limit=${limit}`;
   if (title.length) {
     params += `&title=${title}`;
   }
 
   return dispatch => {
     dispatch(searchStartAction(searchFields));
-    return fetch(`/api/products.json?${params}`)
+    return fetch(`/api/products.json?${params}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
       .then(response => response.json())
       .then(({ products }) => {
         return dispatch(searchCompleteAction(products));

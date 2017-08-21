@@ -2,7 +2,7 @@ const express = require('express');
 const querystring = require('querystring');
 const crypto = require('crypto');
 
-module.exports = function shopifyAuth({
+module.exports.shopifyAuthRouter = function({
   host,
   apiKey,
   secret,
@@ -13,9 +13,12 @@ module.exports = function shopifyAuth({
 
   // This function initializes the Shopify OAuth Process
   router.get('/', function(request, response) {
-    if (request.query.shop) {
-      request.session.shop = request.query.shop;
-      const redirectTo = `https://${request.query.shop}/admin/oauth/authorize`;
+    const { query, session } = request;
+    const { shop } = query;
+
+    if (shop) {
+      session.shop = shop;
+      const redirectTo = `https://${shop}/admin/oauth/authorize`;
       const redirectParams = `?client_id=${apiKey}&scope=${scope}&redirect_uri=${host}/auth/shopify/callback`;
       response.send(
         `<!DOCTYPE html>
@@ -33,32 +36,11 @@ module.exports = function shopifyAuth({
   // Users are redirected here after clicking `Install`.
   // The redirect from Shopify contains the authorization_code query parameter,
   // which the app exchanges for an access token
-  router.get('/callback', verifyRequest, (request, response) => {
-    if (request.query.shop) {
-      const params = {
-        client_id: apiKey,
-        client_secret: secret,
-        code: request.query.code,
-      };
-      const requestBody = querystring.stringify(params);
-      fetch(`https://${request.query.shop}/admin/oauth/access_token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(requestBody),
-        },
-        body: requestBody,
-      })
-        .then(remoteResponse => remoteResponse.json())
-        .then(responseBody => {
-          request.session.accessToken = responseBody.access_token;
-          afterAuth(request, response);
-        });
-    }
-  });
+  router.get('/callback', (request, response) => {
+    const { query } = request;
+    const { code, hmac, shop } = query;
 
-  function verifyRequest(request, response, next) {
-    const map = JSON.parse(JSON.stringify(request.query));
+    const map = JSON.parse(JSON.stringify(query));
     delete map['signature'];
     delete map['hmac'];
 
@@ -68,12 +50,50 @@ module.exports = function shopifyAuth({
       .update(message)
       .digest('hex');
 
-    if (generated_hash === request.query.hmac) {
-      next();
-    } else {
-      return response.json(400);
+    if (generated_hash !== hmac) {
+      return response.status(400).send('HMAC validation failed');
     }
-  }
+
+    if (shop == null) {
+      return response.status(400).send('Expected a shop parameter');
+    }
+
+    const requestBody = querystring.stringify({
+      code,
+      client_id: apiKey,
+      client_secret: secret,
+    });
+
+    fetch(`https://${shop}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(requestBody),
+      },
+      body: requestBody,
+    })
+      .then(remoteResponse => remoteResponse.json())
+      .then(responseBody => {
+        request.session.accessToken = responseBody.access_token;
+        afterAuth(request, response);
+      });
+  });
 
   return router;
+};
+
+module.exports.withShop = function({ redirect } = { redirect: true }) {
+  return function verifyRequest(request, response, next) {
+    const { query: { shop }, session } = request;
+
+    if (session && session.accessToken) {
+      return next();
+    }
+
+    if (redirect) {
+      return response.redirect(`/auth/shopify?shop=${shop}`);
+    }
+
+    return response.status(401).json('Unauthorized');
+  };
 };
