@@ -15,8 +15,8 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
 const { shopifyAuthRouter, withShop } = require('./routes/shopifyAuth');
+const { withWebhook } = require('./middleware/webhooks');
 const shopifyApiProxy = require('./routes/shopifyApiProxy');
-const webhookRouter = require('./routes/webhooks');
 const shopStore = require('./shopStore');
 
 const {
@@ -62,8 +62,14 @@ app.use(
 
 app.get('/install', (req, res) => res.render('install'));
 app.use('/auth/shopify', shopifyAuthRouter(shopifyConfig));
-app.use('/webhooks', webhookRouter);
 app.use('/api', withShop({ redirect: false }), shopifyApiProxy);
+
+// Webhooks
+app.use('/order-create', withWebhook, (request, response) => {
+  console.log('We got a webhook!');
+  console.log('Details: ', request.webhook);
+  console.log('Body:', request.body);
+});
 
 // Run webpack hot reloading in dev
 if (isDevelopment) {
