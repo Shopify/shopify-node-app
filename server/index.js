@@ -17,7 +17,6 @@ const config = require('../config/webpack.config.js');
 const { shopifyAuthRouter, withShop } = require('./routes/shopifyAuth');
 const { withWebhook } = require('./middleware/webhooks');
 const shopifyApiProxy = require('./routes/shopifyApiProxy');
-const shopStore = require('./shopStore');
 
 const {
   SHOPIFY_APP_KEY,
@@ -33,13 +32,8 @@ const shopifyConfig = {
   scope: ['write_orders, write_products'],
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
-    //TODO: install webhook
-    shopStore.storeShop({ accessToken, shop }, (err, token) => {
-      if (err) {
-        console.error('🔴 Error storing shop data', err);
-      }
-      return response.redirect('/');
-    });
+    //TODO: install webhook as an example
+    return response.redirect('/');
   },
 };
 
