@@ -17,10 +17,6 @@ This example app uses node, express, webpack, react, redux, and Shopify/polaris
 
 ## Getting this to work locally
 
-### Install external dependencies
-- Install and run [Redis](https://redis.io/topics/quickstart)
-  - Using homebrew: `brew install redis && brew services start redis`
-
 ### Allow your app to talk to Shopify
 - Create a tunnel to localhost:3000 using [forward](https://forwardhq.com/) or [ngrok](https://ngrok.com/)
   - Note the tunnel url (we’ll refer to it as HOST)
