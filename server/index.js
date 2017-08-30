@@ -14,7 +14,7 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const { shopifyRouter, withShop, withWebhook } = require('../shopify-node');
+const { shopifyRouter, withShop, withWebhook } = require('../shopify-express');
 
 const {
   SHOPIFY_APP_KEY,
