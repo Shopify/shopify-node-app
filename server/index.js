@@ -14,12 +14,7 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const {
-  shopifyAuthRouter,
-  withShop,
-  withWebhook,
-  shopifyApiProxy
-} = require('../shopify-node');
+const { shopifyRouter, withShop, withWebhook } = require('../shopify-node');
 
 const {
   SHOPIFY_APP_KEY,
@@ -57,17 +52,6 @@ app.use(
   })
 );
 
-app.get('/install', (req, res) => res.render('install'));
-app.use('/auth/shopify', shopifyAuthRouter(shopifyConfig));
-app.use('/api', withShop({ redirect: false }), shopifyApiProxy);
-
-// Webhooks
-app.use('/order-create', withWebhook, (request, response) => {
-  console.log('We got a webhook!');
-  console.log('Details: ', request.webhook);
-  console.log('Body:', request.body);
-});
-
 // Run webpack hot reloading in dev
 if (isDevelopment) {
   const compiler = webpack(config);
@@ -93,19 +77,30 @@ if (isDevelopment) {
   app.use('/assets', express.static(staticPath));
 }
 
+// Install
+app.get('/install', (req, res) => res.render('install'));
+
+// Mount Shopify Routes
+app.use('/', shopifyRouter(shopifyConfig));
+
+// Client
 app.get('/', withShop(), function(request, response) {
   const { session: { shop, accessToken } } = request;
-  if (!accessToken) {
-    return response.redirect(`/auth/shopify?shop=${request.query.shop}`);
-  }
-
   response.render('app', {
     title: 'Shopify Node App',
     apiKey: shopifyConfig.apiKey,
-    shop: request.session.shop,
+    shop: shop,
   });
 });
 
+// Webhooks
+app.get('/order-create', withWebhook, (request, response) => {
+  console.log('We got a webhook!');
+  console.log('Details: ', request.webhook);
+  console.log('Body:', request.body);
+});
+
+// Error Handlers
 app.use(function(req, res, next) {
   const err = new Error('Not Found');
   err.status = 404;

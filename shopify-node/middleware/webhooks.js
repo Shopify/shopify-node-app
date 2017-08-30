@@ -3,7 +3,7 @@ const shopStore = require('../shopStore');
 
 const { SHOPIFY_APP_SECRET } = process.env;
 
-function withWebhook(request, response, next) {
+module.exports = function withWebhook(request, response, next) {
   const { body: data } = request;
   const hmac = request.get('X-Shopify-Hmac-Sha256');
   const topic = request.get('X-Shopify-Topic');
@@ -29,5 +29,3 @@ function withWebhook(request, response, next) {
     next();
   });
 }
-
-module.exports = { withWebhook };
