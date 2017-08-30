@@ -12,7 +12,7 @@ module.exports = class MemoryStrategy {
       data
     );
 
-    return done(null, this.store[shop]);
+    return done(null, accessToken);
   }
 
   getShop({ shop }, done) {
