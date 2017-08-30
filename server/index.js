@@ -14,10 +14,7 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const { shopifyAuthRouter, withShop } = require('./routes/shopifyAuth');
-const shopifyApiProxy = require('./routes/shopifyApiProxy');
-const webhookRouter = require('./routes/webhooks');
-const shopStore = require('./shopStore');
+const { shopifyRouter, withShop, withWebhook } = require('../shopify-express');
 
 const {
   SHOPIFY_APP_KEY,
@@ -33,13 +30,8 @@ const shopifyConfig = {
   scope: ['write_orders, write_products'],
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
-    //TODO: install webhook
-    shopStore.storeShop({ accessToken, shop }, (err, token) => {
-      if (err) {
-        console.error('🔴 Error storing shop data', err);
-      }
-      return response.redirect('/');
-    });
+    //TODO: install webhook as an example
+    return response.redirect('/');
   },
 };
 
@@ -59,11 +51,6 @@ app.use(
     saveUninitialized: false,
   })
 );
-
-app.get('/install', (req, res) => res.render('install'));
-app.use('/auth/shopify', shopifyAuthRouter(shopifyConfig));
-app.use('/webhooks', webhookRouter);
-app.use('/api', withShop({ redirect: false }), shopifyApiProxy);
 
 // Run webpack hot reloading in dev
 if (isDevelopment) {
@@ -90,19 +77,30 @@ if (isDevelopment) {
   app.use('/assets', express.static(staticPath));
 }
 
+// Install
+app.get('/install', (req, res) => res.render('install'));
+
+// Mount Shopify Routes
+app.use('/', shopifyRouter(shopifyConfig));
+
+// Client
 app.get('/', withShop(), function(request, response) {
   const { session: { shop, accessToken } } = request;
-  if (!accessToken) {
-    return response.redirect(`/auth/shopify?shop=${request.query.shop}`);
-  }
-
   response.render('app', {
     title: 'Shopify Node App',
     apiKey: shopifyConfig.apiKey,
-    shop: request.session.shop,
+    shop: shop,
   });
 });
 
+// Webhooks
+app.get('/order-create', withWebhook, (request, response) => {
+  console.log('We got a webhook!');
+  console.log('Details: ', request.webhook);
+  console.log('Body:', request.body);
+});
+
+// Error Handlers
 app.use(function(req, res, next) {
   const err = new Error('Not Found');
   err.status = 404;

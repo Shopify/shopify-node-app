@@ -1,8 +1,9 @@
 const express = require('express');
 const querystring = require('querystring');
 const crypto = require('crypto');
+const shopStore = require('../shopStore');
 
-module.exports.shopifyAuthRouter = function({
+module.exports = function shopifyAuthRouter({
   host,
   apiKey,
   secret,
@@ -74,26 +75,18 @@ module.exports.shopifyAuthRouter = function({
     })
       .then(remoteResponse => remoteResponse.json())
       .then(responseBody => {
-        request.session.accessToken = responseBody.access_token;
-        afterAuth(request, response);
+        const accessToken = responseBody.access_token;
+
+        shopStore.storeShop({ accessToken, shop }, (err, token) => {
+          if (err) {
+            console.error('🔴 Error storing shop access token', err);
+          }
+
+          request.session.accessToken = accessToken;
+          afterAuth(request, response);
+        });
       });
   });
 
   return router;
-};
-
-module.exports.withShop = function({ redirect } = { redirect: true }) {
-  return function verifyRequest(request, response, next) {
-    const { query: { shop }, session } = request;
-
-    if (session && session.accessToken) {
-      return next();
-    }
-
-    if (redirect) {
-      return response.redirect(`/auth/shopify?shop=${shop}`);
-    }
-
-    return response.status(401).json('Unauthorized');
-  };
 };
