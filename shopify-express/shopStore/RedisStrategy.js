@@ -7,7 +7,7 @@ module.exports = class RedisStrategy {
 
   storeShop({ shop, accessToken, data = {} }, done) {
     const shopData = Object.assign({}, { accessToken }, data);
-    redis.hmset(shop, shopData, err => {
+    this.client.hmset(shop, shopData, err => {
       if (err) {
         done(err);
       }
@@ -17,7 +17,7 @@ module.exports = class RedisStrategy {
   }
 
   getShop({ shop }, done) {
-    redis.hgetall(shop, (err, shopData) => {
+    this.client.hgetall(shop, (err, shopData) => {
       if (err) {
         return done(err);
       }

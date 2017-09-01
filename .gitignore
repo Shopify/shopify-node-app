@@ -4,3 +4,4 @@ assets/
 node_modules/
 dump.rdb
 main.js
+db.sqlite3
