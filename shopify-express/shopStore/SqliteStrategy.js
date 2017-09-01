@@ -21,8 +21,7 @@ module.exports = class SqliteStrategy {
   }
 
   storeShop({ shop, accessToken, data = {} }, done) {
-    this.knex.insert({shopify_domain: shop, access_token: accessToken}).into('shops')
-      .whereNotExists('shopify_domain', shop)
+    this.knex.raw(`INSERT OR IGNORE INTO shops (shopify_domain, access_token) VALUES ('${shop}', '${accessToken}')`)
       .then((result) => {
         return done(null, accessToken);
       })
@@ -31,7 +30,7 @@ module.exports = class SqliteStrategy {
   getShop({ shop }, done) {
     this.knex('shops').where('shopify_domain', shop)
       .then((result) => {
-        return done(null, shopData);
+        return done(null, result);
       })
   }
 }
