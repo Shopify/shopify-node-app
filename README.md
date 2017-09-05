@@ -3,7 +3,7 @@
 The goal of this example app is to provide a starting point for Shopify app developers so that they will be able to quickly
 spin up an embedded Shopify app using Node and Express.js and get started using the Polaris design system and React components.
 
-This example app uses node, express, webpack, react, redux, and Shopify/polaris
+This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 
 ## Features
 - [x] React app using [Polaris](https://polaris.shopify.com/)
@@ -22,7 +22,7 @@ This example app uses node, express, webpack, react, redux, and Shopify/polaris
 ## Running the project locally
 
 ### Install project dependencies
-- Install Node.js version 7.7.3. We recommend using [nvm](https://github.com/creationix/nvm) to manage node versions.
+- Install Node.js version 7.7.3. We recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions.
 - Install the [Yarn.js](https://yarnpkg.com/en/docs/install) package manager. Yarn is an alternative to npm that is faster and more reliable.
 - Install project dependencies with `yarn install`
 
