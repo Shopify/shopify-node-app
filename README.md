@@ -1,40 +1,48 @@
 # Shopify Node App
 
+The goal of this example app is to provide a starting point for Shopify app developers so that they will be able to quickly
+spin up an embedded Shopify app using Node and Express.js and get started using the Polaris design system and React components.
+
 This example app uses node, express, webpack, react, redux, and Shopify/polaris
 
 ## Features
-- [x] React app with polaris
-- [x] Hot reloading
-- [x] Example data flow with Redux and Polaris components
-- [x] Shopify Auth
-- [x] Get api data from shopify and pass to react
-- [ ] Server side rendering of react components
+- [x] React app using [Polaris](https://polaris.shopify.com/)
+- [x] Shopify Authentication
+- [x] Get API data from Shopify and pass it to React
+- [x] Hot reloading with Webpack
+- [x] Example data flow with Redux and Polaris React components
+- [x] Example webhook set up
 
 ## Commands
 - `yarn run start` run the server
-- `yarn run dev` run it in dev mode with hotreloading
+- `yarn run dev` run it in development mode with hotreloading
+- `yarn run prod` run it in production mode with compiled assets
 - `yarn run clean` clean the compiled assets directory
 
-## Getting this to work locally
+## Running the project locally
+
+### Install project dependencies
+- Install Node.js version 7.7.3. We recommend using [nvm](https://github.com/creationix/nvm) to manage node versions.
+- Install the [Yarn.js](https://yarnpkg.com/en/docs/install) package manager. Yarn is an alternative to npm that is faster and more reliable.
+- Install project dependencies with `yarn install`
 
 ### Allow your app to talk to Shopify
 - Create a tunnel to localhost:3000 using [forward](https://forwardhq.com/) or [ngrok](https://ngrok.com/)
-  - Note the tunnel url (we’ll refer to it as HOST)
+  - Note the tunnel url (we’ll refer to it as `HOST`)
 
-### Register your app
-- Sign into [partners dashboard](https://www.shopify.ca/partners)
-- Create a new app
-- Set the app url to `HOST/`
-- Set the whitelisted URL to `HOST/auth/shopify/callback`
+### Register your app in the Partner Dashboard
+- Sign into your [Shopify Partner Dashboard](https://partners.shopify.com/organizations)
+- Click 'Apps' in the sidebar and create a new app
+- Set the app url to `{{ HOST }}/`
+- Set the whitelisted URL to `{{ HOST }}/auth/shopify/callback`
 - Go to extensions tab and enable “Embed in Shopify admin”
 
 ### Configure and add to a store
-- Clone: `git clone git@github.com:Shopify/shopify-node-app.git`
 - Rename `.env.example` to `.env` and
   - Set Add HOST from your tunnel service as `SHOPIFY_APP_HOST`
   - Add the api key from partners dash as `SHOPIFY_APP_KEY`
   - Add the api secret from partners dash as `SHOPIFY_APP_SECRET`
 - Run `yarn install && yarn run start`
-- Open a browser to `HOST/install`
+- Open a browser to `{{ HOST }}/install`
 - Enter your store’s domain and hit install
 - 🚀 🎉
