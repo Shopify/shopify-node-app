@@ -46,3 +46,35 @@ This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 - Open a browser to `{{ HOST }}/install`
 - Enter your store’s domain and hit install
 - 🚀 🎉
+
+## Architecture
+
+There are three main sections that provide the foundations for this example. They are organized as follows:
+
+### `server`
+This folder provides the Express.js server as well as a few basic views.
+The server provides some example endpoints that demonstrate mounting the Shopify routes for installation and authentication, hosting the React app
+with an API proxy, and a basic webhook.
+
+The code here is mostly glue code, with the bulk of the actual functionality provided by the modules in `shopify-express`.
+
+### `shopify-express`
+This folder contains abstractions that are used by the node server to install and authenticate with Shopify and persist information about the shop.
+
+The main abstractions are `shopifyRouter`, `withShop`, and `withWebhook`.
+
+* `shopifyRouter` provides mountable routes for authentication and API proxying. The authentication endpoint also handles shop session storage using a configurable storage strategy (defaults to SQLite).
+* `withShop` is an express middleware that validates the presence of your shop session.
+* `withWebhook` is an express middleware that validates the the presence of a valid HMAC signature
+
+The plan is to eventually move this entire folder into an npm package that projects like this can consume.
+
+### `client`
+This folder contains the UI demo using Polaris React components and Redux to manage app state.
+It has two subfolders called `store` and `actions` which are Redux concepts.
+
+`store` is the thing that models the state of the app. Every Redux action sends a message to a function called a 'reducer'.
+The reducer uses the information in the message to progress the state of the app.
+For simplicity, we included the reducer in the same file as the store configuration.
+
+`actions` are the functions that are fired from interactions with the UI.
