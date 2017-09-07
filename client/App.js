@@ -56,32 +56,36 @@ class App extends React.Component {
                 <FormLayout.Group>
                   <TextField
                     label="Search product title"
+                    labelHidden={true}
+                    placeholder="Search product title"
                     value={searchFields.title}
                     onChange={title => dispatch(updateSearchTitle(title))}
                   />
                   <Select
                     label="Search limit"
+                    labelHidden={true}
                     options={['10', '20', '50']}
                     value={searchFields.limit}
                     onChange={limit => dispatch(updateSearchLimit(limit))}
                   />
+                  <Button
+                    primary
+                    onClick={() =>
+                      dispatch(
+                        searchAction({
+                          title: searchFields.title,
+                          limit: searchFields.limit,
+                        })
+                      )}
+                  >
+                    Search
+                  </Button>
                 </FormLayout.Group>
-
-                <Button
-                  primary
-                  onClick={() =>
-                    dispatch(
-                      searchAction({
-                        title: searchFields.title,
-                        limit: searchFields.limit,
-                      })
-                    )}
-                >
-                  Search
-                </Button>
 
                 <TextField
                   label="Filter by product title"
+                  labelHidden={true}
+                  placeholder="Filter by product title"
                   value={filterQuery}
                   onChange={newQuery => dispatch(filterAction(newQuery))}
                 />
