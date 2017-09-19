@@ -62,18 +62,20 @@ class App extends React.Component {
                     value={requestFields.path}
                     onChange={path => dispatch(updatePath(path))}
                   />
-                  <Button
-                    primary
-                    onClick={() =>
-                      dispatch(
-                        requestAction({
-                          title: requestFields.title,
-                          limit: requestFields.limit,
-                        })
-                      )}
-                  >
-                    Send
-                  </Button>
+                  <div style={{transform: 'translateY(12px)'}}>
+                    <Button
+                      primary
+                      onClick={() =>
+                        dispatch(
+                          requestAction({
+                            title: requestFields.title,
+                            limit: requestFields.limit,
+                          })
+                        )}
+                    >
+                      Send
+                    </Button>
+                  </div>
                 </FormLayout.Group>
               </FormLayout>
             </Layout.Section>
