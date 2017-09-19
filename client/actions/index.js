@@ -25,52 +25,48 @@ export function updateParams(params) {
   };
 }
 
-export function searchAction(searchFields) {
-  const { title, limit } = searchFields;
-  let params = `limit=${limit}`;
-  if (title.length) {
-    params += `&title=${title}`;
-  }
+export function sendRequest(requestFields) {
+  const { verb, path, params } = requestFields;
 
   return dispatch => {
-    dispatch(searchStartAction(searchFields));
-    return fetch(`/api/products.json?${params}`, {
-      method: 'GET',
+    dispatch(requestStartAction());
+
+    return fetch(`/api${path}`, {
+      method: verb,
+      data: params,
       credentials: 'include',
     })
-      .then(response => response.json())
-      .then(({ products }) => {
-        return dispatch(searchCompleteAction(products));
-      })
+      .then(response =>  response.json())
+      .then(json => dispatch(requestCompleteAction(json)))
       .catch(error => {
-        dispatch(searchErrorAction(error));
+        dispatch(requestErrorAction(error));
       });
   };
 }
 
-function searchCompleteAction(products) {
+function requestStartAction() {
   return {
-    type: 'SEARCH_COMPLETE',
+    type: 'REQUEST_START',
+    payload: {},
+  };
+}
+
+function requestCompleteAction(json) {
+  const responseBody = JSON.stringify(json, null, 2);
+
+  return {
+    type: 'REQUEST_COMPLETE',
     payload: {
-      products,
+      responseBody
     },
   };
 }
 
-function searchStartAction(searchFields) {
+function requestErrorAction(requestError) {
   return {
-    type: 'SEARCH_START',
+    type: 'REQUEST_ERROR',
     payload: {
-      searchFields,
-    },
-  };
-}
-
-function searchErrorAction(searchError) {
-  return {
-    type: 'SEARCH_ERROR',
-    payload: {
-      searchError,
+      requestError,
     },
   };
 }

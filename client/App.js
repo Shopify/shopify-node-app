@@ -17,7 +17,7 @@ import {
   updateVerb,
   updatePath,
   updateParams,
-  requestAction,
+  sendRequest,
 } from './actions';
 
 class App extends React.Component {
@@ -65,13 +65,7 @@ class App extends React.Component {
                   <div style={{transform: 'translateY(12px)'}}>
                     <Button
                       primary
-                      onClick={() =>
-                        dispatch(
-                          requestAction({
-                            title: requestFields.title,
-                            limit: requestFields.limit,
-                          })
-                        )}
+                      onClick={() => dispatch(sendRequest(requestFields))}
                     >
                       Send
                     </Button>
@@ -85,7 +79,7 @@ class App extends React.Component {
                 label="Request Params"
                 value={requestFields.params}
                 onChange={params => dispatch(updateParams(params))}
-                multiline={10}
+                multiline={5}
               />
             </Layout.Section>
 

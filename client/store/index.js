@@ -4,7 +4,7 @@ import logger from 'redux-logger';
 
 const requestFields = {
   verb: 'GET',
-  path: '/admin/products.json', // should be webhooks
+  path: '/products.json', // should be webhooks
   params: ''
 };
 
@@ -41,23 +41,21 @@ function exampleAppReducer(state = initState, action) {
           params: action.payload.params,
         },
       };
-    case 'request_START':
+    case 'REQUEST_START':
       return {
         ...state,
         requestInProgress: true,
         requestError: null,
-        requestFields: action.payload.requestFields,
+        responseBody: ''
       };
-    case 'request_COMPLETE':
+    case 'REQUEST_COMPLETE':
       return {
         ...state,
         requestInProgress: false,
         requestError: null,
-        products: action.payload.products,
-        filterQuery: '',
-        filteredProducts: action.payload.products,
+        responseBody: action.payload.responseBody
       };
-    case 'request_ERROR':
+    case 'REQUEST_ERROR':
       return {
         ...state,
         requestInProgress: false,
