@@ -1,17 +1,26 @@
-export function updateSearchTitle(title) {
+export function updateVerb(verb) {
   return {
-    type: 'UPDATE_SEARCH_TITLE',
+    type: 'UPDATE_VERB',
     payload: {
-      title,
+      verb,
     },
   };
 }
 
-export function updateSearchLimit(limit) {
+export function updatePath(path) {
   return {
-    type: 'UPDATE_SEARCH_LIMIT',
+    type: 'UPDATE_PATH',
     payload: {
-      limit,
+      path,
+    },
+  };
+}
+
+export function updateParams(params) {
+  return {
+    type: 'UPDATE_PARAMS',
+    payload: {
+      params,
     },
   };
 }
@@ -63,12 +72,5 @@ function searchErrorAction(searchError) {
     payload: {
       searchError,
     },
-  };
-}
-
-export function filterAction(filterQuery) {
-  return {
-    type: 'FILTER',
-    payload: { filterQuery },
   };
 }

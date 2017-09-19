@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
+
 import {
   Page,
   Layout,
@@ -10,38 +12,34 @@ import {
   Button,
 } from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
+
 import {
-  updateSearchTitle,
-  updateSearchLimit,
-  searchAction,
-  filterAction,
+  updateVerb,
+  updatePath,
+  updateParams,
+  requestAction,
 } from './actions';
-import { connect } from 'react-redux';
 
 class App extends React.Component {
-  componentDidMount() {
-    const { dispatch, searchFields } = this.props;
-
-    dispatch(searchAction(searchFields));
-  }
-
   render() {
     const {
       dispatch,
-      filterQuery,
-      filteredProducts,
-      searchFields,
-      searchInProgress,
-      searchError,
+      requestFields,
+      requestInProgress,
+      requestError,
+      responseBody,
     } = this.props;
-    const apiKey = window.apiKey;
-    const shopOrigin = window.shopOrigin;
-    const productListJSX = (
-      <Card>
-        <ResourceList items={filteredProducts} renderItem={renderProduct} />
-      </Card>
+
+    const { apiKey, shopOrigin } = window;
+
+    const requestIndicatorJSX = 'requesting...';
+    const responseBodyJSX = (
+      <TextField
+        label="Response"
+        value={responseBody}
+        multiline={30}
+      />
     );
-    const searchIndicatorJSX = 'Searching...';
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
@@ -55,46 +53,43 @@ class App extends React.Component {
               <FormLayout>
                 <FormLayout.Group>
                   <TextField
-                    label="Search product title"
-                    labelHidden={true}
-                    placeholder="Search product title"
-                    value={searchFields.title}
-                    onChange={title => dispatch(updateSearchTitle(title))}
+                    label="HTTP Verb"
+                    value={requestFields.verb}
+                    onChange={verb => dispatch(updateVerb(verb))}
                   />
-                  <Select
-                    label="Search limit"
-                    labelHidden={true}
-                    options={['10', '20', '50']}
-                    value={searchFields.limit}
-                    onChange={limit => dispatch(updateSearchLimit(limit))}
+                  <TextField
+                    label="Path"
+                    value={requestFields.path}
+                    onChange={path => dispatch(updatePath(path))}
                   />
                   <Button
                     primary
                     onClick={() =>
                       dispatch(
-                        searchAction({
-                          title: searchFields.title,
-                          limit: searchFields.limit,
+                        requestAction({
+                          title: requestFields.title,
+                          limit: requestFields.limit,
                         })
                       )}
                   >
-                    Search
+                    Send
                   </Button>
                 </FormLayout.Group>
-
-                <TextField
-                  label="Filter by product title"
-                  labelHidden={true}
-                  placeholder="Filter by product title"
-                  value={filterQuery}
-                  onChange={newQuery => dispatch(filterAction(newQuery))}
-                />
               </FormLayout>
             </Layout.Section>
 
             <Layout.Section>
-              {searchInProgress ? searchIndicatorJSX : productListJSX}
-              {searchError}
+              <TextField
+                label="Request Params"
+                value={requestFields.params}
+                onChange={params => dispatch(updateParams(params))}
+                multiline={10}
+              />
+            </Layout.Section>
+
+            <Layout.Section>
+              {requestInProgress ? requestIndicatorJSX : responseBodyJSX}
+              {requestError}
             </Layout.Section>
           </Layout>
         </Page>
@@ -108,18 +103,16 @@ function renderProduct({ title }) {
 }
 
 function mapStateToProps({
-  filterQuery,
-  filteredProducts,
-  searchFields,
-  searchInProgress,
-  searchError,
+  requestFields,
+  requestInProgress,
+  requestError,
+  responseBody,
 }) {
   return {
-    filterQuery,
-    filteredProducts,
-    searchFields,
-    searchInProgress,
-    searchError,
+    requestFields,
+    requestInProgress,
+    requestError,
+    responseBody,
   };
 }
 

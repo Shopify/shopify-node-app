@@ -2,68 +2,66 @@ import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import logger from 'redux-logger';
 
-const searchFields = {
-  title: '',
-  limit: 20,
+const requestFields = {
+  verb: 'GET',
+  path: '/admin/products.json', // should be webhooks
+  params: ''
 };
 
 const initState = {
-  filterQuery: '',
-  filteredProducts: [],
-  searchInProgress: false,
-  searchError: null,
-  products: [],
-  searchFields,
+  requestFields,
+  requestInProgress: false,
+  requestError: null,
+  responseBody: '',
 };
 
 function exampleAppReducer(state = initState, action) {
   switch (action.type) {
-    case 'FILTER':
+    case 'UPDATE_VERB':
       return {
         ...state,
-        filterQuery: action.payload.filterQuery,
-        products: state.products,
-        filteredProducts: state.products.filter(product => {
-          return product.title.indexOf(action.payload.filterQuery) !== -1;
-        }),
-      };
-    case 'UPDATE_SEARCH_TITLE':
-      return {
-        ...state,
-        searchFields: {
-          ...state.searchFields,
-          title: action.payload.title,
+        requestFields: {
+          ...state.requestFields,
+          verb: action.payload.verb,
         },
       };
-    case 'UPDATE_SEARCH_LIMIT':
+    case 'UPDATE_PATH':
       return {
         ...state,
-        searchFields: {
-          ...state.searchFields,
-          limit: action.payload.limit,
+        requestFields: {
+          ...state.requestFields,
+          path: action.payload.path,
         },
       };
-    case 'SEARCH_START':
+    case 'UPDATE_PARAMS':
       return {
         ...state,
-        searchInProgress: true,
-        searchError: null,
-        searchFields: action.payload.searchFields,
+        requestFields: {
+          ...state.requestFields,
+          params: action.payload.params,
+        },
       };
-    case 'SEARCH_COMPLETE':
+    case 'request_START':
       return {
         ...state,
-        searchInProgress: false,
-        searchError: null,
+        requestInProgress: true,
+        requestError: null,
+        requestFields: action.payload.requestFields,
+      };
+    case 'request_COMPLETE':
+      return {
+        ...state,
+        requestInProgress: false,
+        requestError: null,
         products: action.payload.products,
         filterQuery: '',
         filteredProducts: action.payload.products,
       };
-    case 'SEARCH_ERROR':
+    case 'request_ERROR':
       return {
         ...state,
-        searchInProgress: false,
-        searchError: action.payload.searchError,
+        requestInProgress: false,
+        requestError: action.payload.requestError,
       };
     default:
       return state;
