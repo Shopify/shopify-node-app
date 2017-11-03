@@ -14,6 +14,7 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
+const Shopify = require('shopify-api-node');
 const { shopifyRouter, withShop, withWebhook } = require('@shopify/shopify-express');
 
 const {
@@ -30,10 +31,25 @@ const shopifyConfig = {
   scope: ['write_orders, write_products'],
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
-    //TODO: install webhook as an example
+
+    registerWebhook(shop, accessToken, {
+      topic: 'app/uninstalled',
+      address: 'https://example-app.com/webhooks/uninstall',
+      format: 'json'
+    });
+
     return response.redirect('/');
   },
 };
+
+const registerWebhook = function(shopDomain, accessToken, webhook) {
+  const shopName = shopDomain.replace('.myshopify.com', '');
+  const shopify = new Shopify({ shopName: shopName, accessToken: accessToken });
+  shopify.webhook.create(webhook).then(
+    response => console.log(`webhook '${webhook.topic}' created`),
+    err => console.log(`Error creating webhook '${webhook.topic}'. ${JSON.stringify(err.response.body)}`)
+  );
+}
 
 const app = express();
 const isDevelopment = NODE_ENV !== 'production';
