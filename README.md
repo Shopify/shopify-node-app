@@ -59,7 +59,7 @@ with an API proxy, and a basic webhook.
 The code here is mostly glue code, with the bulk of the actual functionality provided by the modules in `shopify-express`.
 
 ### `shopify-express`
-This example app consumes the [shopify-express-app](https://github.com/shopify/shopify-express-app) library to quickly connect to the Shopify API.
+This example app consumes the [shopify-express](https://github.com/shopify/shopify-express-app) library to quickly connect to the Shopify API.
 
 ### `client`
 This folder contains the UI demo using Polaris React components and Redux to manage app state.
