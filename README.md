@@ -59,15 +59,7 @@ with an API proxy, and a basic webhook.
 The code here is mostly glue code, with the bulk of the actual functionality provided by the modules in `shopify-express`.
 
 ### `shopify-express`
-This folder contains abstractions that are used by the node server to install and authenticate with Shopify and persist information about the shop.
-
-The main abstractions are `shopifyRouter`, `withShop`, and `withWebhook`.
-
-* `shopifyRouter` provides mountable routes for authentication and API proxying. The authentication endpoint also handles shop session storage using a configurable storage strategy (defaults to SQLite).
-* `withShop` is an express middleware that validates the presence of your shop session.
-* `withWebhook` is an express middleware that validates the the presence of a valid HMAC signature
-
-The plan is to eventually move this entire folder into an npm package that projects like this can consume.
+This example app consumes the [shopify-express](https://github.com/shopify/shopify-express-app) library to quickly connect to the Shopify API.
 
 ### `client`
 This folder contains the UI demo using Polaris React components and Redux to manage app state.

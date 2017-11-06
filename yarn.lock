@@ -55,6 +55,18 @@
     core-js "^2.4.1"
     react-addons-transition-group "^15.4.2"
 
+"@shopify/shopify-express@1.0.0-alpha.1":
+  version "1.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@shopify/shopify-express/-/shopify-express-1.0.0-alpha.1.tgz#75d6f8c4c710505f609751e776615054ab48a42c"
+  dependencies:
+    connect-redis "^3.3.0"
+    express "~4.15.2"
+    express-session "^1.15.3"
+    knex "^0.13.0"
+    redis "^2.7.1"
+    sqlite3 "^3.1.9"
+    url "^0.11.0"
+
 "@types/classnames@^0.0.32":
   version "0.0.32"
   resolved "https://registry.yarnpkg.com/@types/classnames/-/classnames-0.0.32.tgz#449abcd9a826807811ef101e58df9f83cfc61713"
