@@ -35,9 +35,9 @@ module.exports = {
   devtool: 'eval',
   entry: {
     main: [
+      ...extraEntryFiles,
       '@shopify/polaris/styles.css',
       path.resolve(__dirname, '../client/index.js'),
-      ...extraEntryFiles,
     ],
   },
   output: {
