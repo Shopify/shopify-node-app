@@ -14,8 +14,8 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const Shopify = require('shopify-api-node');
-const { shopifyRouter, withShop, withWebhook } = require('@shopify/shopify-express');
+const ShopifyExpress = require('@shopify/shopify-express');
+const {MemoryStrategy} = require('@shopify/shopify-express/strategies');
 
 const {
   SHOPIFY_APP_KEY,
@@ -29,6 +29,7 @@ const shopifyConfig = {
   apiKey: SHOPIFY_APP_KEY,
   secret: SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
+  shopStore: new MemoryStrategy(),
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
 
@@ -96,11 +97,17 @@ if (isDevelopment) {
 // Install
 app.get('/install', (req, res) => res.render('install'));
 
+// Create shopify middlewares and router
+const shopify = ShopifyExpress(shopifyConfig);
+
 // Mount Shopify Routes
-app.use('/', shopifyRouter(shopifyConfig));
+const {routes, middleware} = shopify;
+const {withShop, withWebhook} = middleware;
+
+app.use('/', routes);
 
 // Client
-app.get('/', withShop(), function(request, response) {
+app.get('/', withShop, function(request, response) {
   const { session: { shop, accessToken } } = request;
   response.render('app', {
     title: 'Shopify Node App',
