@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "@shopify/polaris": "^1.8.3",
-    "@shopify/shopify-express": "^1.0.0-alpha.1",
+    "@shopify/shopify-express": "^1.0.0-alpha.3",
     "body-parser": "~1.17.1",
     "chalk": "^1.1.3",
     "connect-redis": "^3.3.0",

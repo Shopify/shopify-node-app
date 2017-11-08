@@ -14,8 +14,9 @@ const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const Shopify = require('shopify-api-node');
-const { shopifyRouter, withShop, withWebhook } = require('@shopify/shopify-express');
+const ShopifyAPIClient = require('shopify-api-node');
+const ShopifyExpress = require('@shopify/shopify-express');
+const {MemoryStrategy} = require('@shopify/shopify-express/strategies');
 
 const {
   SHOPIFY_APP_KEY,
@@ -29,6 +30,7 @@ const shopifyConfig = {
   apiKey: SHOPIFY_APP_KEY,
   secret: SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
+  shopStore: new MemoryStrategy(),
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
 
@@ -44,7 +46,7 @@ const shopifyConfig = {
 
 const registerWebhook = function(shopDomain, accessToken, webhook) {
   const shopName = shopDomain.replace('.myshopify.com', '');
-  const shopify = new Shopify({ shopName: shopName, accessToken: accessToken });
+  const shopify = new ShopifyAPIClient({ shopName: shopName, accessToken: accessToken });
   shopify.webhook.create(webhook).then(
     response => console.log(`webhook '${webhook.topic}' created`),
     err => console.log(`Error creating webhook '${webhook.topic}'. ${JSON.stringify(err.response.body)}`)
@@ -96,11 +98,17 @@ if (isDevelopment) {
 // Install
 app.get('/install', (req, res) => res.render('install'));
 
+// Create shopify middlewares and router
+const shopify = ShopifyExpress(shopifyConfig);
+
 // Mount Shopify Routes
-app.use('/', shopifyRouter(shopifyConfig));
+const {routes, middleware} = shopify;
+const {withShop, withWebhook} = middleware;
+
+app.use('/', routes);
 
 // Client
-app.get('/', withShop(), function(request, response) {
+app.get('/', withShop, function(request, response) {
   const { session: { shop, accessToken } } = request;
   response.render('app', {
     title: 'Shopify Node App',
