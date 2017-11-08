@@ -12,7 +12,7 @@
     "precommit": "yarn run pretty"
   },
   "engines": {
-    "node": "~7.7.3"
+    "node": ">= 8.1.0"
   },
   "browsers": [
     "last 3 chrome versions",
@@ -44,6 +44,7 @@
     "redux": "^3.6.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
+    "shopify-api-node": "^2.9.0",
     "sqlite3": "^3.1.9",
     "url": "^0.11.0",
     "webpack-hot-middleware": "^2.18.0",
