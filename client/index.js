@@ -20,6 +20,5 @@ function renderApp() {
 renderApp();
 
 if (module.hot) {
-  module.hot.accept('./index.js');
-  module.hot.accept('./', renderApp);
+  module.hot.accept();
 }
