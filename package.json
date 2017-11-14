@@ -62,7 +62,6 @@
     "eslint": "3.19.0",
     "eslint-plugin-prettier": "^2.1.2",
     "global": "^4.3.2",
-    "node-inspector": "^1.1.1",
     "postcss-loader": "^2.0.6",
     "prettier": "^1.5.2",
     "react-hot-loader": "^3.0.0-beta.7",
