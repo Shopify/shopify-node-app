@@ -22,7 +22,7 @@ This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 ## Running the project locally
 
 ### Install project dependencies
-- Install Node.js version 7.7.3. We recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions.
+- Install Node.js version 8.1.0 or higher. We recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions.
 - Install the [Yarn.js](https://yarnpkg.com/en/docs/install) package manager. Yarn is an alternative to npm that is faster and more reliable.
 - Install project dependencies with `yarn install`
 
