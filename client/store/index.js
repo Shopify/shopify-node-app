@@ -3,9 +3,16 @@ import thunkMiddleware from 'redux-thunk';
 import logger from 'redux-logger';
 
 const requestFields = {
-  verb: 'GET',
-  path: '/products.json', // should be webhooks
-  params: ''
+  verb: 'POST',
+  path: '/products.json',
+  params: JSON.stringify({
+    product: {
+      title: "Burton Custom Freestyle 151",
+      body_html: "<strong>Good snowboard!<\/strong>",
+      vendor: "Burton",
+      product_type: "Snowboard"
+    }
+  }, null, 2)
 };
 
 const initState = {

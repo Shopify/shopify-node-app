@@ -7,7 +7,6 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const path = require('path');
 const logger = require('morgan');
-const bodyParser = require('body-parser');
 
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
@@ -59,8 +58,6 @@ const isDevelopment = NODE_ENV !== 'production';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   session({
     store: isDevelopment ? undefined : new RedisStore(),

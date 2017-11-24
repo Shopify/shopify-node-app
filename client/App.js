@@ -1,45 +1,12 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-
-import {
-  Page,
-  Layout,
-  Card,
-  ResourceList,
-  TextField,
-  Select,
-  FormLayout,
-  Button,
-} from '@shopify/polaris';
+import React, { Component} from 'react';
+import { Page } from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
 
-import {
-  updateVerb,
-  updatePath,
-  updateParams,
-  sendRequest,
-} from './actions';
+import ApiConsole from './components/ApiConsole'
 
-class App extends React.Component {
+class App extends Component {
   render() {
-    const {
-      dispatch,
-      requestFields,
-      requestInProgress,
-      requestError,
-      responseBody,
-    } = this.props;
-
     const { apiKey, shopOrigin } = window;
-
-    const requestIndicatorJSX = 'requesting...';
-    const responseBodyJSX = (
-      <TextField
-        label="Response"
-        value={responseBody}
-        multiline={30}
-      />
-    );
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
@@ -48,68 +15,11 @@ class App extends React.Component {
           breadcrumbs={[{ content: 'Home', url: '/foo' }]}
           primaryAction={{ content: 'Add something' }}
         >
-          <Layout sectioned>
-            <Layout.Section>
-              <FormLayout>
-                <FormLayout.Group>
-                  <TextField
-                    label="HTTP Verb"
-                    value={requestFields.verb}
-                    onChange={verb => dispatch(updateVerb(verb))}
-                  />
-                  <TextField
-                    label="Path"
-                    value={requestFields.path}
-                    onChange={path => dispatch(updatePath(path))}
-                  />
-                  <div style={{transform: 'translateY(12px)'}}>
-                    <Button
-                      primary
-                      onClick={() => dispatch(sendRequest(requestFields))}
-                    >
-                      Send
-                    </Button>
-                  </div>
-                </FormLayout.Group>
-              </FormLayout>
-            </Layout.Section>
-
-            <Layout.Section>
-              <TextField
-                label="Request Params"
-                value={requestFields.params}
-                onChange={params => dispatch(updateParams(params))}
-                multiline={5}
-              />
-            </Layout.Section>
-
-            <Layout.Section>
-              {requestInProgress ? requestIndicatorJSX : responseBodyJSX}
-              {requestError}
-            </Layout.Section>
-          </Layout>
+          <ApiConsole />
         </Page>
       </EmbeddedApp>
     );
   }
 }
 
-function renderProduct({ title }) {
-  return <ResourceList.Item attributeOne={title} />;
-}
-
-function mapStateToProps({
-  requestFields,
-  requestInProgress,
-  requestError,
-  responseBody,
-}) {
-  return {
-    requestFields,
-    requestInProgress,
-    requestError,
-    responseBody,
-  };
-}
-
-export default connect(mapStateToProps)(App);
+export default App;

@@ -28,15 +28,24 @@ export function updateParams(params) {
 export function sendRequest(requestFields) {
   const { verb, path, params } = requestFields;
 
+  const fetchOptions = {
+    method: verb,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+  }
+
+  if (verb !== 'GET') {
+    fetchOptions['body'] = params
+  }
+
   return dispatch => {
     dispatch(requestStartAction());
 
-    return fetch(`/api${path}`, {
-      method: verb,
-      data: params,
-      credentials: 'include',
-    })
-      .then(response =>  response.json())
+    return fetch(`/api${path}`, fetchOptions)
+      .then(response => response.json())
       .then(json => dispatch(requestCompleteAction(json)))
       .catch(error => {
         dispatch(requestErrorAction(error));
