@@ -11,13 +11,17 @@
     <script>
       window.apiKey = "<%= apiKey %>"
       window.shopOrigin = "https://<%= shop %>"
-    </script>
 
-    <script>
-      ShopifyApp.init({
+      const shopifyAppConfig = {
         apiKey: window.apiKey,
-        shopOrigin: window.shopOrigin
-      });
+        shopOrigin: window.shopOrigin,
+      }
+
+      if ("<%= process.env.NODE_ENV %>" === 'development') {
+        shopifyAppConfig.forceRedirect = false;
+      }
+
+      ShopifyApp.init(shopifyAppConfig);
     </script>
 
     <div id="root"></div>
