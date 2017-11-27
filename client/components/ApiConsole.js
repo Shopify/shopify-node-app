@@ -1,7 +1,8 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 
-import { Layout, Stack, TextField, Button } from '@shopify/polaris';
+import { Layout, Stack, Card, TextField, Button } from '@shopify/polaris';
+import ObjectInspector from 'react-object-inspector';
 import { updatePath, updateParams, sendRequest } from '../actions';
 
 import VerbPicker from './VerbPicker';
@@ -48,19 +49,28 @@ class ApiConsole extends Component {
 
   renderResponse() {
     const { requestInProgress, requestError, responseBody } = this.props;
-    const requestIndicatorJSX = 'requesting...';
-    const responseBodyJSX = (
-      <TextField
-        label="Response"
-        value={responseBody}
-        multiline={30}
-      />
-    );
+
+    if (responseBody === '') {
+      return null;
+    }
+
+    if (requestInProgress) {
+      return (
+        <Layout.Section>
+          'requesting...';
+        </Layout.Section>
+      )
+    }
+
+    const data = JSON.parse(responseBody)
 
     return (
       <Layout.Section>
-        {requestInProgress ? requestIndicatorJSX : responseBodyJSX}
-        {requestError}
+        <Card>
+          <div style={{margin: '15px 15px'}}>
+            <ObjectInspector data={data} initialExpandedPaths={['root', 'root.*']}/>
+          </div>
+        </Card>
       </Layout.Section>
     )
   }
