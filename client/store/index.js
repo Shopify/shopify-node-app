@@ -22,11 +22,12 @@ const initState = {
   responseBody: '',
 };
 
-function exampleAppReducer(state = initState, action) {
+function reducer(state = initState, action) {
   switch (action.type) {
     case 'UPDATE_VERB':
       return {
         ...state,
+        responseBody: '',
         requestFields: {
           ...state.requestFields,
           verb: action.payload.verb,
@@ -35,6 +36,7 @@ function exampleAppReducer(state = initState, action) {
     case 'UPDATE_PATH':
       return {
         ...state,
+        responseBody: '',
         requestFields: {
           ...state.requestFields,
           path: action.payload.path,
@@ -43,6 +45,7 @@ function exampleAppReducer(state = initState, action) {
     case 'UPDATE_PARAMS':
       return {
         ...state,
+        responseBody: '',
         requestFields: {
           ...state.requestFields,
           params: action.payload.params,
@@ -75,6 +78,6 @@ function exampleAppReducer(state = initState, action) {
 
 const middleware = applyMiddleware(thunkMiddleware, logger);
 
-const store = createStore(exampleAppReducer, middleware);
+const store = createStore(reducer, middleware);
 
 export default store;

@@ -35,6 +35,18 @@ class ApiConsole extends Component {
           </Stack>
         </Layout.Section>
 
+        {this.renderParams()}
+      </div>
+    )
+  }
+
+  renderParams() {
+    const { dispatch, requestFields } = this.props;
+
+    if (requestFields.verb === 'GET') {
+      return null;
+    } else {
+      return (
         <Layout.Section>
           <TextField
             label="Request Params"
@@ -43,8 +55,8 @@ class ApiConsole extends Component {
             multiline={12}
           />
         </Layout.Section>
-      </div>
-    )
+      );
+    }
   }
 
   renderResponse() {
