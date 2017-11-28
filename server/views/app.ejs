@@ -11,13 +11,22 @@
     <script>
       window.apiKey = "<%= apiKey %>"
       window.shopOrigin = "https://<%= shop %>"
-    </script>
 
-    <script>
-      ShopifyApp.init({
+      const shopifyAppConfig = {
         apiKey: window.apiKey,
-        shopOrigin: window.shopOrigin
-      });
+        shopOrigin: window.shopOrigin,
+      }
+
+      // This will allow you to access the app outside of the Shopify
+      // parent iframe in development mode. Doing this will give you
+      // access to React and Redux dev tools, but will also disrupt
+      // postmessages to the parent and block EASDK calls
+      // https://help.shopify.com/api/sdks/shopify-apps/embedded-app-sdk/methods#shopifyapp-init-config
+      if ("<%= process.env.NODE_ENV %>" === 'development') {
+        shopifyAppConfig.forceRedirect = false;
+      }
+
+      ShopifyApp.init(shopifyAppConfig);
     </script>
 
     <div id="root"></div>
