@@ -27,7 +27,7 @@ class ApiConsole extends Component {
             <VerbPicker verb={requestFields.verb} />
             <TextField
               value={requestFields.path}
-              onChange={path => dispatch(updatePath(requestFields.path))}
+              onChange={path => dispatch(updatePath(path))}
             />
             <Button primary onClick={() => dispatch(sendRequest(requestFields))}>
               Send
