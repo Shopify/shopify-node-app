@@ -55,9 +55,9 @@
     core-js "^2.4.1"
     react-addons-transition-group "^15.4.2"
 
-"@shopify/shopify-express@^1.0.0-alpha.4":
-  version "1.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@shopify/shopify-express/-/shopify-express-1.0.0-alpha.4.tgz#b16a04acbd6193c01ac27d6cf8ae982c4bd02005"
+"@shopify/shopify-express@^1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@shopify/shopify-express/-/shopify-express-1.0.0-alpha.5.tgz#a68f559a97f4fe28361e6c4546e334b95cdfa3ba"
   dependencies:
     body-parser "^1.18.2"
     connect-redis "^3.3.0"
