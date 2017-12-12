@@ -1,74 +1,81 @@
-export function updateSearchTitle(title) {
+export function updateVerb(verb) {
   return {
-    type: 'UPDATE_SEARCH_TITLE',
+    type: 'UPDATE_VERB',
     payload: {
-      title,
+      verb,
     },
   };
 }
 
-export function updateSearchLimit(limit) {
+export function updatePath(path) {
   return {
-    type: 'UPDATE_SEARCH_LIMIT',
+    type: 'UPDATE_PATH',
     payload: {
-      limit,
+      path,
     },
   };
 }
 
-export function searchAction(searchFields) {
-  const { title, limit } = searchFields;
-  let params = `limit=${limit}`;
-  if (title.length) {
-    params += `&title=${title}`;
+export function updateParams(params) {
+  return {
+    type: 'UPDATE_PARAMS',
+    payload: {
+      params,
+    },
+  };
+}
+
+export function sendRequest(requestFields) {
+  const { verb, path, params } = requestFields;
+
+  const fetchOptions = {
+    method: verb,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+  }
+
+  if (verb !== 'GET') {
+    fetchOptions['body'] = params
   }
 
   return dispatch => {
-    dispatch(searchStartAction(searchFields));
-    return fetch(`/api/products.json?${params}`, {
-      method: 'GET',
-      credentials: 'include',
-    })
+    dispatch(requestStartAction());
+
+    return fetch(`/api${path}`, fetchOptions)
       .then(response => response.json())
-      .then(({ products }) => {
-        return dispatch(searchCompleteAction(products));
-      })
+      .then(json => dispatch(requestCompleteAction(json)))
       .catch(error => {
-        dispatch(searchErrorAction(error));
+        dispatch(requestErrorAction(error));
       });
   };
 }
 
-function searchCompleteAction(products) {
+function requestStartAction() {
   return {
-    type: 'SEARCH_COMPLETE',
+    type: 'REQUEST_START',
+    payload: {},
+  };
+}
+
+function requestCompleteAction(json) {
+  const responseBody = JSON.stringify(json, null, 2);
+
+  return {
+    type: 'REQUEST_COMPLETE',
     payload: {
-      products,
+      responseBody
     },
   };
 }
 
-function searchStartAction(searchFields) {
+function requestErrorAction(requestError) {
   return {
-    type: 'SEARCH_START',
+    type: 'REQUEST_ERROR',
     payload: {
-      searchFields,
+      requestError,
     },
-  };
-}
-
-function searchErrorAction(searchError) {
-  return {
-    type: 'SEARCH_ERROR',
-    payload: {
-      searchError,
-    },
-  };
-}
-
-export function filterAction(filterQuery) {
-  return {
-    type: 'FILTER',
-    payload: { filterQuery },
   };
 }

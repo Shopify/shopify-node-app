@@ -2,68 +2,74 @@ import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import logger from 'redux-logger';
 
-const searchFields = {
-  title: '',
-  limit: 20,
+const requestFields = {
+  verb: 'POST',
+  path: '/products.json',
+  params: JSON.stringify({
+    product: {
+      title: "Burton Custom Freestyle 151",
+      body_html: "<strong>Good snowboard!<\/strong>",
+      vendor: "Burton",
+      product_type: "Snowboard"
+    }
+  }, null, 2)
 };
 
 const initState = {
-  filterQuery: '',
-  filteredProducts: [],
-  searchInProgress: false,
-  searchError: null,
-  products: [],
-  searchFields,
+  requestFields,
+  requestInProgress: false,
+  requestError: null,
+  responseBody: '',
 };
 
-function exampleAppReducer(state = initState, action) {
+function reducer(state = initState, action) {
   switch (action.type) {
-    case 'FILTER':
+    case 'UPDATE_VERB':
       return {
         ...state,
-        filterQuery: action.payload.filterQuery,
-        products: state.products,
-        filteredProducts: state.products.filter(product => {
-          return product.title.indexOf(action.payload.filterQuery) !== -1;
-        }),
-      };
-    case 'UPDATE_SEARCH_TITLE':
-      return {
-        ...state,
-        searchFields: {
-          ...state.searchFields,
-          title: action.payload.title,
+        responseBody: '',
+        requestFields: {
+          ...state.requestFields,
+          verb: action.payload.verb,
         },
       };
-    case 'UPDATE_SEARCH_LIMIT':
+    case 'UPDATE_PATH':
       return {
         ...state,
-        searchFields: {
-          ...state.searchFields,
-          limit: action.payload.limit,
+        responseBody: '',
+        requestFields: {
+          ...state.requestFields,
+          path: action.payload.path,
         },
       };
-    case 'SEARCH_START':
+    case 'UPDATE_PARAMS':
       return {
         ...state,
-        searchInProgress: true,
-        searchError: null,
-        searchFields: action.payload.searchFields,
+        responseBody: '',
+        requestFields: {
+          ...state.requestFields,
+          params: action.payload.params,
+        },
       };
-    case 'SEARCH_COMPLETE':
+    case 'REQUEST_START':
       return {
         ...state,
-        searchInProgress: false,
-        searchError: null,
-        products: action.payload.products,
-        filterQuery: '',
-        filteredProducts: action.payload.products,
+        requestInProgress: true,
+        requestError: null,
+        responseBody: ''
       };
-    case 'SEARCH_ERROR':
+    case 'REQUEST_COMPLETE':
       return {
         ...state,
-        searchInProgress: false,
-        searchError: action.payload.searchError,
+        requestInProgress: false,
+        requestError: null,
+        responseBody: action.payload.responseBody
+      };
+    case 'REQUEST_ERROR':
+      return {
+        ...state,
+        requestInProgress: false,
+        requestError: action.payload.requestError,
       };
     default:
       return state;
@@ -72,6 +78,6 @@ function exampleAppReducer(state = initState, action) {
 
 const middleware = applyMiddleware(thunkMiddleware, logger);
 
-const store = createStore(exampleAppReducer, middleware);
+const store = createStore(reducer, middleware);
 
 export default store;
