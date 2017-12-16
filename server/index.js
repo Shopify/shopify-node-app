@@ -7,7 +7,6 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const path = require('path');
 const logger = require('morgan');
-const bodyParser = require('body-parser');
 
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
@@ -35,8 +34,8 @@ const shopifyConfig = {
     const { session: { accessToken, shop } } = request;
 
     registerWebhook(shop, accessToken, {
-      topic: 'app/uninstalled',
-      address: 'https://example-app.com/webhooks/uninstall',
+      topic: 'orders/create',
+      address: `${SHOPIFY_APP_HOST}/order-create`,
       format: 'json'
     });
 
@@ -59,8 +58,6 @@ const isDevelopment = NODE_ENV !== 'production';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   session({
     store: isDevelopment ? undefined : new RedisStore(),
@@ -117,12 +114,16 @@ app.get('/', withShop, function(request, response) {
   });
 });
 
-// Webhooks
-app.get('/order-create', withWebhook, (request, response) => {
+app.post('/order-create', withWebhook((error, request) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+
   console.log('We got a webhook!');
   console.log('Details: ', request.webhook);
   console.log('Body:', request.body);
-});
+}));
 
 // Error Handlers
 app.use(function(req, res, next) {
