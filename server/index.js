@@ -34,8 +34,8 @@ const shopifyConfig = {
     const { session: { accessToken, shop } } = request;
 
     registerWebhook(shop, accessToken, {
-      topic: 'app/uninstalled',
-      address: 'https://example-app.com/webhooks/uninstall',
+      topic: 'orders/create',
+      address: `${SHOPIFY_APP_HOST}/order-create`,
       format: 'json'
     });
 
@@ -114,12 +114,16 @@ app.get('/', withShop, function(request, response) {
   });
 });
 
-// Webhooks
-app.get('/order-create', withWebhook, (request, response) => {
+app.post('/order-create', withWebhook((error, request) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+
   console.log('We got a webhook!');
   console.log('Details: ', request.webhook);
   console.log('Body:', request.body);
-});
+}));
 
 // Error Handlers
 app.use(function(req, res, next) {
