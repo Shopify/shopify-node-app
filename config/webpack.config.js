@@ -80,7 +80,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        include: /@shopify\/polaris/,
+        include: path.resolve(__dirname, '../node_modules/@shopify/polaris'),
         loaders: [
           {
             loader: 'style-loader',
