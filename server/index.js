@@ -24,12 +24,17 @@ const {
   NODE_ENV,
 } = process.env;
 
+const isDevelopment = NODE_ENV !== 'production';
+
 const shopifyConfig = {
   host: SHOPIFY_APP_HOST,
   apiKey: SHOPIFY_APP_KEY,
   secret: SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
   shopStore: new MemoryStrategy(),
+  sessionConfig: {
+    store: isDevelopment ? undefined : new RedisStore()
+  },
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
 
@@ -53,11 +58,12 @@ const registerWebhook = function(shopDomain, accessToken, webhook) {
 }
 
 const app = express();
-const isDevelopment = NODE_ENV !== 'production';
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
+
+/*
 app.use(
   session({
     store: isDevelopment ? undefined : new RedisStore(),
@@ -66,6 +72,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+*/
 
 // Run webpack hot reloading in dev
 if (isDevelopment) {
