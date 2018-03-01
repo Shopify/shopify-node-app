@@ -70,7 +70,9 @@ if (isDevelopment) {
 // Install Shopify routes
 const {auth, apiProxy, verifyAuth, verifyWebhook} = shopify;
 
-app.get(INSTALL, (req, res) => res.render('install'));
+app.get(INSTALL, function(req, res) {
+  res.render('install', {authRoute: AUTH});
+});
 app.use(AUTH, auth);
 app.use(API, apiProxy);
 
