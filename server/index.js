@@ -1,5 +1,5 @@
-require('isomorphic-fetch');
 require('dotenv').config();
+require('isomorphic-fetch');
 
 const fs = require('fs');
 const express = require('express');
@@ -7,54 +7,29 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const path = require('path');
 const logger = require('morgan');
-
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-const config = require('../config/webpack.config.js');
 
-const ShopifyAPIClient = require('shopify-api-node');
-const ShopifyExpress = require('@shopify/shopify-express');
-const {MemoryStrategy} = require('@shopify/shopify-express/strategies');
+const webpackConfig = require('../config/webpack.config.js');
+const {
+  AUTH,
+  API,
+  ASSETS,
+  CLIENT_ENTRY,
+  INSTALL,
+  ORDER_CREATE_WEBHOOK,
+} = require('../config/paths');
+const shopify = require('./shopify');
 
 const {
-  SHOPIFY_APP_KEY,
-  SHOPIFY_APP_HOST,
-  SHOPIFY_APP_SECRET,
   NODE_ENV,
+  SHOPIFY_APP_SECRET,
+  SHOPIFY_API_KEY,
 } = process.env;
-
-const shopifyConfig = {
-  host: SHOPIFY_APP_HOST,
-  apiKey: SHOPIFY_APP_KEY,
-  secret: SHOPIFY_APP_SECRET,
-  scope: ['write_orders, write_products'],
-  shopStore: new MemoryStrategy(),
-  afterAuth(request, response) {
-    const { session: { accessToken, shop } } = request;
-
-    registerWebhook(shop, accessToken, {
-      topic: 'orders/create',
-      address: `${SHOPIFY_APP_HOST}/order-create`,
-      format: 'json'
-    });
-
-    return response.redirect('/');
-  },
-};
-
-const registerWebhook = function(shopDomain, accessToken, webhook) {
-  const shopName = shopDomain.replace('.myshopify.com', '');
-  const shopify = new ShopifyAPIClient({ shopName: shopName, accessToken: accessToken });
-  shopify.webhook.create(webhook).then(
-    response => console.log(`webhook '${webhook.topic}' created`),
-    err => console.log(`Error creating webhook '${webhook.topic}'. ${JSON.stringify(err.response.body)}`)
-  );
-}
-
-const app = express();
 const isDevelopment = NODE_ENV !== 'production';
 
+const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
@@ -69,11 +44,11 @@ app.use(
 
 // Run webpack hot reloading in dev
 if (isDevelopment) {
-  const compiler = webpack(config);
+  const compiler = webpack(webpackConfig);
   const middleware = webpackMiddleware(compiler, {
     hot: true,
     inline: true,
-    publicPath: config.output.publicPath,
+    publicPath: webpackConfig.output.publicPath,
     contentBase: 'src',
     stats: {
       colors: true,
@@ -89,32 +64,18 @@ if (isDevelopment) {
   app.use(webpackHotMiddleware(compiler));
 } else {
   const staticPath = path.resolve(__dirname, '../assets');
-  app.use('/assets', express.static(staticPath));
+  app.use(ASSETS, express.static(staticPath));
 }
 
-// Install
-app.get('/install', (req, res) => res.render('install'));
+// Install Shopify routes
+const {auth, apiProxy, verifyAuth, verifyWebhook} = shopify;
 
-// Create shopify middlewares and router
-const shopify = ShopifyExpress(shopifyConfig);
+app.get(INSTALL, (req, res) => res.render('install'));
+app.use(AUTH, auth);
+app.use(API, apiProxy);
 
-// Mount Shopify Routes
-const {routes, middleware} = shopify;
-const {withShop, withWebhook} = middleware;
-
-app.use('/', routes);
-
-// Client
-app.get('/', withShop, function(request, response) {
-  const { session: { shop, accessToken } } = request;
-  response.render('app', {
-    title: 'Shopify Node App',
-    apiKey: shopifyConfig.apiKey,
-    shop: shop,
-  });
-});
-
-app.post('/order-create', withWebhook((error, request) => {
+// Webhook handler
+app.post(ORDER_CREATE_WEBHOOK, verifyWebhook((error, request) => {
   if (error) {
     console.error(error);
     return;
@@ -124,6 +85,16 @@ app.post('/order-create', withWebhook((error, request) => {
   console.log('Details: ', request.webhook);
   console.log('Body:', request.body);
 }));
+
+// Client app entrypoint
+app.get(CLIENT_ENTRY,  verifyAuth, function(request, response) {
+  const { session: { shop, accessToken } } = request;
+  response.render('app', {
+    title: 'Shopify Node App',
+    apiKey: SHOPIFY_API_KEY,
+    shop: shop,
+  });
+});
 
 // Error Handlers
 app.use(function(req, res, next) {

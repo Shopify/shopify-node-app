@@ -37,6 +37,7 @@
     "express-session": "^1.15.3",
     "knex": "^0.13.0",
     "morgan": "~1.8.1",
+    "prop-types": "^15.6.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-object-inspector": "^0.2.1",
