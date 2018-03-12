@@ -44,8 +44,7 @@ const shopifyConfig = {
 };
 
 const registerWebhook = function(shopDomain, accessToken, webhook) {
-  const shopName = shopDomain.replace('.myshopify.com', '');
-  const shopify = new ShopifyAPIClient({ shopName: shopName, accessToken: accessToken });
+  const shopify = new ShopifyAPIClient({ shopName: shopDomain, accessToken: accessToken });
   shopify.webhook.create(webhook).then(
     response => console.log(`webhook '${webhook.topic}' created`),
     err => console.log(`Error creating webhook '${webhook.topic}'. ${JSON.stringify(err.response.body)}`)
