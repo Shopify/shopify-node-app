@@ -61,6 +61,9 @@ The code here is mostly glue code, with the bulk of the actual functionality pro
 ### `shopify-express`
 This example app consumes the [shopify-express](https://github.com/shopify/shopify-express-app) library to quickly connect to the Shopify API.
 
+### `shopify-api-node`
+This example app uses the Official [shopify-api-node](https://github.com/MONEI/Shopify-api-node) library to connect to the Shopify API.
+
 ### `client`
 This folder contains the UI demo using Polaris React components and Redux to manage app state.
 It has two subfolders called `store` and `actions` which are Redux concepts.
