@@ -34,7 +34,7 @@ This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 - Sign into your [Shopify Partner Dashboard](https://partners.shopify.com/organizations)
 - Click 'Apps' in the sidebar and create a new app
 - Set the app url to `{{ HOST }}/`
-- Set the whitelisted URL to `{{ HOST }}/auth/shopify/callback`
+- Set the whitelisted URL to `{{ HOST }}/shopify/auth/callback`
 - Go to extensions tab and enable “Embed in Shopify admin”
 
 ### Configure and add to a store
