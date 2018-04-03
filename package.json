@@ -5,7 +5,7 @@
   "scripts": {
     "prod": "yarn run clean && yarn run build && cross-env NODE_ENV=production yarn run start",
     "dev": "cross-env NODE_ENV=development yarn run start",
-    "start": "node ./bin/www",
+    "start": "nodemon ./bin/www",
     "build": "cross-env NODE_ENV=production webpack --config ./config/webpack.config.js --progress --profile --colors",
     "clean": "rm -rf ./assets && mkdir ./assets",
     "pretty": "prettier --single-quote --trailing-comma es5 --write {client,bin,config,server}{/*,/**/*}.js",
@@ -39,6 +39,7 @@
     "morgan": "~1.8.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "nodemon": "^1.17.1",
     "react-object-inspector": "^0.2.1",
     "react-redux": "^5.0.5",
     "redis": "^2.7.1",
