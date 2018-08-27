@@ -15,6 +15,7 @@
       const shopifyAppConfig = {
         apiKey: window.apiKey,
         shopOrigin: window.shopOrigin,
+        forceRedirect: true,
       }
 
       // This will allow you to access the app outside of the Shopify
@@ -22,9 +23,9 @@
       // access to React and Redux dev tools, but will also disrupt
       // postmessages to the parent and block EASDK calls
       // https://help.shopify.com/api/sdks/shopify-apps/embedded-app-sdk/methods#shopifyapp-init-config
-      if ("<%= process.env.NODE_ENV %>" === 'development') {
+      /*if ("<%= process.env.NODE_ENV %>" === 'development') {
         shopifyAppConfig.forceRedirect = false;
-      }
+      }*/
 
       ShopifyApp.init(shopifyAppConfig);
     </script>

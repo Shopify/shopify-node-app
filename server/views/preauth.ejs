@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Redirecting</title>
+</head>
+<body>
+
+<script>
+  // https://stackoverflow.com/a/901144
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
+  function topLevelRedirect(path) {
+    data = JSON.stringify({
+      message: 'Shopify.API.remoteRedirect',
+      data: { location: 'https://eb8c3737.ngrok.io' + path }
+    });
+    window.parent.postMessage(data, window.shopOrigin);
+  }
+
+  function topLevelLoginRedirect() {
+    document.cookie = "topLevelLogin=1";
+    topLevelRedirect(window.loginPath + '?shop=' + window.shop);
+  }
+
+  // Set by user
+  window.preAuthPath = '/pre-auth/auth';
+  window.loginPath = '/shopify/auth';
+  window.apiKey = "<%= apiKey %>";
+
+  // From parameters
+  window.shop = getParameterByName('shop');
+  window.setTestCookie = !!getParameterByName('set_test_cookie');
+  window.checkTestCookie = !!getParameterByName('check_test_cookie');
+  window.setTopLevelCookie = !!getParameterByName('set_top_level_cookie');
+  window.shopOrigin = 'https://' + window.shop;
+
+  const testCookieExists = document.cookie.split(';').filter((item) => item.includes('cookiesPersist=')).length;
+  const topLevelLoginCookieExists = document.cookie.split(';').filter((item) => item.includes('topLevelLogin=')).length;
+  if (setTopLevelCookie) {
+    document.addEventListener("DOMContentLoaded", function() {
+      const button = document.querySelector('#gesture');
+      button.style.display = 'block';
+      button.addEventListener('click', function () {
+        document.cookie = "cookiesPersist=1";
+        window.location.href = window.shopOrigin + "/admin/apps/" + window.apiKey;
+      });
+    });
+  }
+  else if (checkTestCookie) {
+    let location;
+
+    if (!testCookieExists) {
+      location = '/pre-auth/auth?set_top_level_cookie=1&shop=' + window.shop;
+      topLevelRedirect(location);
+    }
+    else {
+      topLevelLoginRedirect();
+    }
+  }
+  else if (setTestCookie) {
+    document.cookie = "cookiesPersist=1";
+    window.location.href = window.preAuthPath + '?check_test_cookie=1&shop=' + window.shop;
+  }
+  else if (!testCookieExists) {
+    window.location.href = window.preAuthPath + '?set_test_cookie=1&shop=' + window.shop;
+  }
+  else if (!topLevelLoginCookieExists) {
+    topLevelLoginRedirect()
+  }
+  else {
+    window.location.href = window.loginPath + '?shop=' + window.shop;
+  }
+</script>
+
+<div id="root">
+  <button id="gesture" style="display: none;">User gesture</button>
+</div>
+</body>
+</html>

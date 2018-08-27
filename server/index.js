@@ -28,7 +28,7 @@ const shopifyConfig = {
   host: SHOPIFY_APP_HOST,
   apiKey: SHOPIFY_APP_KEY,
   secret: SHOPIFY_APP_SECRET,
-  scope: ['write_orders, write_products'],
+  scope: ['write_orders, write_products,write_script_tags'],
   shopStore: new MemoryStrategy(),
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
@@ -104,12 +104,20 @@ const {withShop, withWebhook} = middleware;
 app.use('/shopify', routes);
 
 // Client
-app.get('/', withShop({authBaseUrl: '/shopify'}), function(request, response) {
+app.get('/', withShop({authBaseUrl: '/pre-auth'}), function(request, response) {
   const { session: { shop, accessToken } } = request;
   response.render('app', {
     title: 'Shopify Node App',
     apiKey: shopifyConfig.apiKey,
     shop: shop,
+  });
+});
+
+app.get('/pre-auth/auth', function(request, response) {
+  response.cookie('serverTest', 1);
+
+  response.render('preauth', {
+    apiKey: shopifyConfig.apiKey,
   });
 });
 
