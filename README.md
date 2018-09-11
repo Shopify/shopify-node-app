@@ -1,3 +1,16 @@
+## Deprecation of `shopify-express`
+
+:exclamation: **This project is currently based on deprecated technology** (the `shopify-express` module). We will be updating it to use tools more inline with our internal node applications shortly.
+
+In the meantime if you would like a headstart learning some of our other tools, [this workshop](https://github.com/Shopify/unite-react-node-app-workshop/blob/master/workshop.md) can help you get started. You can also jump straight to the final `step7` branch to have a reasonable starting place to build an app from. Note that it is not, however, meant to be a production ready app boilerplate.
+
+If you would like to go straight to the source, many of our application libraries can be found in the [quilt](https://github.com/Shopify/quilt) repo. These are all used internally and written against technologies we use for our own applications. Some handy libraries for node apps you may want to look at are:
+* [@shopify/koa-shopify-auth](https://github.com/Shopify/quilt/tree/master/packages/koa-shopify-auth)
+* [@shopify/koa-shopify-graphql-proxy](https://github.com/Shopify/quilt/blob/master/packages/koa-shopify-graphql-proxy/README.md)
+* [@shopify/react-html](https://github.com/Shopify/quilt/blob/master/packages/react-html/README.md)
+
+Finally, as mentioned above we have some new things coming down the pipe soon. ❤️✨
+
 # Shopify Node App
 
 The goal of this example app is to provide a starting point for Shopify app developers so that they will be able to quickly
